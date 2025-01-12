@@ -33,6 +33,11 @@ const programData: ProgramItem[] = [
     composer: "April",
     performers: "April Chen",
   },
+  {
+    title: "Liebestod (Paraphrase of Tristan und Isolde)",
+    composer: "Liszt",
+    performers: "April Chen",
+  },
 ];
 
 export default function ConcertProgram() {
