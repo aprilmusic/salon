@@ -19,7 +19,12 @@ const programData: ProgramItem[] = [
     performers: "Aivant Goyal",
   },
   {
-    title: "WIP Project",
+    title: "wish",
+    composer: "chriung",
+    performers: "Chris Chung",
+  },
+  {
+    title: "run away",
     composer: "chriung",
     performers: "Chris Chung",
   },
