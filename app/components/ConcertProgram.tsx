@@ -24,6 +24,26 @@ const programData: ProgramItem[] = [
     performers: "Chris Chung",
   },
   {
+    title: "Maine",
+    composer: "Noah Kahan",
+    performers: "Alvin Adjei",
+  },
+  {
+    title: "The Piphany",
+    composer: "Luis",
+    performers: "Luis",
+  },
+  {
+    title: "Liebestod (Paraphrase of Tristan und Isolde)",
+    composer: "Liszt",
+    performers: "April Chen",
+  },
+  {
+    title: "Big T's First DJ set",
+    composer: "Big T",
+    performers: "Big T",
+  },
+  {
     title: "run away",
     composer: "chriung",
     performers: "Chris Chung",
@@ -33,24 +53,10 @@ const programData: ProgramItem[] = [
     composer: "Alvin Adjei",
     performers: "Alvin Adjei",
   },
-  {
-    title: "Big T's First DJ set",
-    composer: "Big T",
-    performers: "Big T",
-  },
-  // {
-  //   title: "Maine",
-  //   composer: "Noah Kahan",
-  //   performers: "Alvin Adjei",
-  // },
+
   {
     title: "Civic Center / UN Plaza",
     composer: "April Chen",
-    performers: "April Chen",
-  },
-  {
-    title: "Liebestod (Paraphrase of Tristan und Isolde)",
-    composer: "Liszt",
     performers: "April Chen",
   },
 ];
