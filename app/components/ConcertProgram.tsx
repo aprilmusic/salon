@@ -44,6 +44,11 @@ const programData: ProgramItem[] = [
     performers: "Big T",
   },
   {
+    title: "Vulnerable",
+    composer: "Tiffany Day",
+    performers: "Aivant Goyal",
+  },
+  {
     title: "run away",
     composer: "chriung",
     performers: "Chris Chung",
@@ -53,7 +58,6 @@ const programData: ProgramItem[] = [
     composer: "Alvin Adjei",
     performers: "Alvin Adjei",
   },
-
   {
     title: "Civic Center / UN Plaza",
     composer: "April Chen",
