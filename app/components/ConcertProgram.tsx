@@ -34,8 +34,8 @@ const programData: ProgramItem[] = [
     performers: "Luis",
   },
   {
-    title: "Liebestod (Paraphrase of Tristan und Isolde)",
-    composer: "Liszt",
+    title: "Civic Center / UN Plaza",
+    composer: "April Chen",
     performers: "April Chen",
   },
   {
@@ -58,9 +58,10 @@ const programData: ProgramItem[] = [
     composer: "Alvin Adjei",
     performers: "Alvin Adjei",
   },
+
   {
-    title: "Civic Center / UN Plaza",
-    composer: "April Chen",
+    title: "Liebestod (Paraphrase of Tristan und Isolde)",
+    composer: "Liszt",
     performers: "April Chen",
   },
 ];
