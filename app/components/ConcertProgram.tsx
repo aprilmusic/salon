@@ -14,8 +14,8 @@ type ProgramItem = {
 
 const programData: ProgramItem[] = [
   {
-    title: "Cruise Control",
-    composer: "Lyn Lapid & Whethan",
+    title: "July",
+    composer: "Lyn Lapid",
     performers: "Aivant Goyal",
   },
   {
