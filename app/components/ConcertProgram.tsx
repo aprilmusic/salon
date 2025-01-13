@@ -33,6 +33,11 @@ const programData: ProgramItem[] = [
     composer: "Alvin Adjei",
     performers: "Alvin Adjei",
   },
+  {
+    title: "Big T's First DJ set",
+    composer: "Big T",
+    performers: "Big T",
+  },
   // {
   //   title: "Maine",
   //   composer: "Noah Kahan",
