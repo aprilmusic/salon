@@ -58,11 +58,15 @@ const programData: ProgramItem[] = [
     composer: "Alvin Adjei",
     performers: "Alvin Adjei",
   },
-
   {
     title: "Liebestod (Paraphrase of Tristan und Isolde)",
     composer: "Liszt",
     performers: "April Chen",
+  },
+  {
+    title: "Vienna",
+    composer: "Billy Joel",
+    performers: "Alvin Adjei (accompanied by April)",
   },
 ];
 
