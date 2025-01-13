@@ -14,14 +14,14 @@ type ProgramItem = {
 
 const programData: ProgramItem[] = [
   {
+    title: "Cruise Control",
+    composer: "Lyn Lapid & Whethan",
+    performers: "Aivant Goyal",
+  },
+  {
     title: "WIP Project",
     composer: "chriung",
     performers: "Chris Chung",
-  },
-  {
-    title: "Cruise Control",
-    composer: "Lyn Lapid",
-    performers: "Aivant Goyal",
   },
   {
     title: "Closer",
@@ -35,7 +35,7 @@ const programData: ProgramItem[] = [
   // },
   {
     title: "Civic Center / UN Plaza",
-    composer: "April",
+    composer: "April Chen",
     performers: "April Chen",
   },
   {
