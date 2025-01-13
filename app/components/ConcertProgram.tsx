@@ -40,8 +40,8 @@ const programData: ProgramItem[] = [
   },
   {
     title: "Big T's First DJ set",
-    composer: "Big T",
-    performers: "Big T",
+    composer: "Big T (lovers by choice)",
+    performers: "Big T (cousins by chance)",
   },
   {
     title: "Vulnerable",
