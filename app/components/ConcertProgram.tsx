@@ -24,10 +24,15 @@ const programData: ProgramItem[] = [
     performers: "Aivant Goyal",
   },
   {
-    title: "Maine",
-    composer: "Noah Kahan",
+    title: "Closer",
+    composer: "Alvin Adjei",
     performers: "Alvin Adjei",
   },
+  // {
+  //   title: "Maine",
+  //   composer: "Noah Kahan",
+  //   performers: "Alvin Adjei",
+  // },
   {
     title: "Civic Center / UN Plaza",
     composer: "April",
