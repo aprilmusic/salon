@@ -1,8 +1,10 @@
 import { PrismaClient } from '@prisma/client'
+import { NextApiResponse } from 'next'
+import { NextApiRequest } from 'next'
 
 const prisma = new PrismaClient()
 
-export async function getLatestConcert() {
+export async function GET(req: NextApiRequest, res: NextApiResponse) {
     try {
         const latestConcert = await prisma.concert.findFirst({
             orderBy: {
@@ -17,11 +19,17 @@ export async function getLatestConcert() {
             }
         })
 
-        return latestConcert
+        return res.send(latestConcert)
     } catch (error) {
         console.error('Error fetching latest concert:', error)
-        throw error
+        return res.send({ error: 'Failed to fetch latest concert' })
     } finally {
         await prisma.$disconnect()
     }
 }
+
+export default function requestHandler(request: NextApiRequest, response: NextApiResponse) {
+    if (request.method === 'GET') {
+        return GET(request, response)
+    }
+}   

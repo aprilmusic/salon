@@ -1,79 +1,59 @@
 import Performance from "./Performance";
 import { Playfair_Display } from "next/font/google";
-import { Box, Container, Heading } from "@chakra-ui/react";
+import { Box, Container, Heading, Text } from "@chakra-ui/react";
+import { useState, useEffect } from 'react';
 
 const playfair = Playfair_Display({
     subsets: ["latin"],
     weight: ["400", "600"],
 });
 
-type ProgramItem = {
-    title: string;
-    composer: string;
-    performers: string;
-};
+export default function Concert({ id }: { id: string | undefined }) {
+    const [concert, setConcert] = useState<{
+        date: Date;
+        performances: Array<{
+            title: string;
+            composer: string;
+            performers: string;
+        }>;
+    } | null>(null);
 
-const programData: ProgramItem[] = [
-    {
-        title: "July",
-        composer: "Lyn Lapid",
-        performers: "Aivant Goyal",
-    },
-    {
-        title: "wish",
-        composer: "chriung",
-        performers: "Chris Chung",
-    },
-    {
-        title: "Maine",
-        composer: "Noah Kahan",
-        performers: "Alvin Adjei",
-    },
-    {
-        title: "The Piphany",
-        composer: "Luis",
-        performers: "Luis",
-    },
-    {
-        title: "Civic Center / UN Plaza",
-        composer: "April Chen",
-        performers: "April Chen",
-    },
-    {
-        title: "Big T's First DJ set",
-        composer: "Big T (lovers by choice)",
-        performers: "Big T (cousins by chance)",
-    },
-    {
-        title: "Vulnerable",
-        composer: "Tiffany Day",
-        performers: "Aivant Goyal",
-    },
-    {
-        title: "run away",
-        composer: "chriung",
-        performers: "Chris Chung",
-    },
-    {
-        title: "Closer",
-        composer: "Alvin Adjei",
-        performers: "Alvin Adjei",
-    },
-    {
-        title: "Liebestod (Paraphrase of Tristan und Isolde)",
-        composer: "Liszt",
-        performers: "April Chen",
-    },
-    {
-        title: "Vienna",
-        composer: "Billy Joel",
-        performers: "Alvin Adjei (accompanied by April)",
-    },
-];
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-export default function Concert() {
+    useEffect(() => {
+        async function fetchConcert() {
+            try {
+                const url = id ? `/api/concerts/${id}` : '/api/concerts/latest';
+                const response = await fetch(url);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch concert');
+                }
+                const data = await response.json();
+                setConcert(data);
+            } catch (err) {
+                setError(err instanceof Error ? err.message : 'An error occurred');
+            } finally {
+                setIsLoading(false);
+            }
+        }
+
+        fetchConcert();
+    }, [id]);
+
+    if (isLoading) {
+        return <Container maxW="container.xl" px={8}><Text>Loading...</Text></Container>;
+    }
+
+    if (error) {
+        return <Container maxW="container.xl" px={8}><Text color="red.500">{error}</Text></Container>;
+    }
+
+    if (!concert) {
+        return <Container maxW="container.xl" px={8}><Text>Concert not found</Text></Container>;
+    }
+
     return (
-
         <Container maxW="container.xl" px={8}>
             <Heading
                 as="h1"
@@ -84,10 +64,10 @@ export default function Concert() {
                 fontFamily={playfair.className}
                 fontWeight="semibold"
             >
-                Salon (Jan 12, 2024)
+                Salon ({new Date(concert.date).toLocaleDateString()})
             </Heading>
             <Box display="flex" flexDirection="column" gap={8}>
-                {programData.map((item, index) => (
+                {concert.performances.map((item, index) => (
                     <Performance
                         key={index}
                         title={item.title}
