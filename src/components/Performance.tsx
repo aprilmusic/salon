@@ -19,7 +19,7 @@ const handleDeletePerformance = async (id: string) => {
         if (!response.ok) {
             throw new Error('Failed to delete performance')
         }
-        window.location.reload()
+        window.location.reload();
     } catch (error) {
         console.error('Error deleting performance:', error)
     }

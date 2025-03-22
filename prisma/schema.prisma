@@ -3,10 +3,10 @@ generator client {
 }
 
 datasource db {
-  // provider = "sqlite"
-  // url      = "file:./dev.db"
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
+  //provider = "postgresql"
+  //url      = env("DATABASE_URL")
 }
 
 model Concert {
@@ -15,7 +15,7 @@ model Concert {
   passcode    String
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
-  performances Performance[]
+  performances Performance[] 
 }
 
 model Performance {
@@ -24,7 +24,7 @@ model Performance {
   composer    String
   performers  String
   order       Int
-  concert     Concert  @relation(fields: [concertId], references: [id])
+  concert     Concert  @relation(fields: [concertId], references: [id], onDelete: Cascade)
   concertId   String
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

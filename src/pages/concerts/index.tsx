@@ -79,7 +79,7 @@ export default function ConcertListPage() {
             if (!data.success) {
                 throw new Error(data.error.message)
             }
-
+            window.location.reload()
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         }
