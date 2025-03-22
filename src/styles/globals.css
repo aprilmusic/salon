@@ -1,6 +1,7 @@
 :root {
   --background: linear-gradient(#fefbec, #f7e9d4);
-  --foreground: #171717;
+  --background-secondary: var(--chakra-colors-color-palette-solid);
+  --foreground: #fefbec;
   --text-primary: #88451d;
   --text-secondary: #ac602e;
   --text-tertiary: #cd7e31;
@@ -32,11 +33,34 @@ a {
   text-decoration: none;
 }
 
+p {
+  color: var(--text-primary);
+}
+
+Input {
+  color: var(--text-secondary);
+}
+
 Dialog {
   border-color: var(--border);
+  background: var(--background-secondary);
+}
+
+Dialog.Title {
+  color: black;
+}
+
+Field.Label {
+  color: var(--text-primary);
+}
+
+Text {
+  color: var(--text-secondary);
 }
 
 Button {
+  padding-left: 8;
+  padding-right: 8;
   border-color: var(--border);
   color: var(--text-primary);
 }

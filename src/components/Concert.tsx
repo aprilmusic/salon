@@ -93,7 +93,7 @@ export default function Concert({ concert }: { concert: Concert }) {
         <Container maxW="container.xl" px={8} >
             <Button p={2} onClick={() => {
                 window.location.href = `/concerts`
-            }} alignSelf="flex-start" variant="outline">
+            }} alignSelf="flex-start" >
                 Back to all concerts
             </Button>
             <Heading
@@ -111,7 +111,7 @@ export default function Concert({ concert }: { concert: Concert }) {
 
 
 
-            <Box display="flex" flexDirection="column" gap={8}>
+            <Box display="flex" flexDirection="column" gap={8} paddingBottom={8}>
                 {(concert.performances ?? []).map((item, index) => (
                     <Performance
                         key={index}
@@ -132,9 +132,9 @@ export default function Concert({ concert }: { concert: Concert }) {
                         <Dialog.Content p={4}
                             bg="var(--background)"
                             backdropFilter="blur(8px)"
-                            borderColor="var(--border">
+                            borderColor="var(--border)">
                             <Dialog.Header>
-                                <Dialog.Title color={"var(--border)"} >Add a performance</Dialog.Title>
+                                <Dialog.Title color="var(--text-primary)">Add a performance</Dialog.Title>
                             </Dialog.Header>
                             <Dialog.Body pb="4">
                                 <form onSubmit={onSubmitCreatePerformance}>
@@ -142,15 +142,15 @@ export default function Concert({ concert }: { concert: Concert }) {
 
                                         <Field.Root>
                                             <Field.Label>Title</Field.Label>
-                                            <Input color="black" {...registerPerformanceForm("title")} />
+                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("title")} />
                                         </Field.Root>
                                         <Field.Root invalid={!!errorsPerformanceForm.composer}>
                                             <Field.Label>Composer</Field.Label>
-                                            <Input color="black" {...registerPerformanceForm("composer")} />
+                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("composer")} />
                                         </Field.Root>
                                         <Field.Root invalid={!!errorsPerformanceForm.performers}>
                                             <Field.Label>Performers</Field.Label>
-                                            <Input color="black" {...registerPerformanceForm("performers")} />
+                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("performers")} />
                                         </Field.Root>
 
                                     </Stack>
@@ -158,7 +158,7 @@ export default function Concert({ concert }: { concert: Concert }) {
                             </Dialog.Body>
                             <Dialog.Footer>
                                 <Dialog.ActionTrigger asChild>
-                                    <Button variant="outline">Cancel</Button>
+                                    <Button>Cancel</Button>
                                 </Dialog.ActionTrigger>
                                 <Dialog.ActionTrigger asChild>
                                     <Button onClick={onSubmitCreatePerformance}>Save</Button>

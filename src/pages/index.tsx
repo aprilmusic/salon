@@ -4,6 +4,8 @@ import Concert from "@/components/Concert";
 import { Box } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { GetLatestConcertResponse, getLatestConcertResponseSchema } from "./api/concerts/latest";
+import { Spinner } from "@chakra-ui/react"
+
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -41,7 +43,7 @@ export default function Home() {
         fontFamily={cormorant.className}
       >
         {concert?.success ? (
-          <Concert concert={concert.result} />) : (<>Boooo you messed up</>)}
+          <Concert concert={concert.result} />) : (<Spinner />)}
       </Box>
     </>
   );

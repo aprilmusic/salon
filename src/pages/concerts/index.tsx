@@ -132,19 +132,18 @@ export default function ConcertListPage() {
                             backdropFilter="blur(8px)"
                             borderColor="var(--text-primary)">
                             <Dialog.Header>
-                                <Dialog.Title color="var(--text-secondary)" >Add a new concert</Dialog.Title>
+                                <Dialog.Title color="var(--text-primary)" >Add a new concert</Dialog.Title>
                             </Dialog.Header>
                             <Dialog.Body pb="4">
                                 <form onSubmit={onSubmitCreateConcert}>
                                     <Stack gap="4" align="flex-start" maxW="sm">
-
                                         <Field.Root>
                                             <Field.Label>Date</Field.Label>
-                                            <Input color="black" {...registerConcertForm("dateString")} />
+                                            <Input paddingLeft={1} color="black" {...registerConcertForm("dateString")} />
                                         </Field.Root>
                                         <Field.Root invalid={!!errorsConcertForm.passcode}>
                                             <Field.Label>passcode</Field.Label>
-                                            <Input color="black" {...registerConcertForm("passcode")} />
+                                            <Input paddingLeft={1} color="black" {...registerConcertForm("passcode")} />
                                         </Field.Root>
 
                                     </Stack>
@@ -198,7 +197,7 @@ export default function ConcertListPage() {
                         </Card.Body>
                     </Card.Root>
                 )) : (
-                    <Text color="#ff8f00" fontSize="xl" textAlign="center">
+                    <Text color="var(--text-primary)" fontSize="xl" textAlign="center">
                         No concerts available at the moment.
                     </Text>
                 )}

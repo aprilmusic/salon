@@ -28,7 +28,7 @@ const handleDeletePerformance = async (id: string) => {
 export default function Performance({ title, composer, performers, id }: { title: string, composer: string, performers: string, id: string }) {
     return (
         <Card.Root
-            bg="var(--background)"
+            bg="var(--background-secondary)"
             backdropFilter="blur(8px)"
             borderColor="var(--border)"
         >
@@ -51,7 +51,7 @@ export default function Performance({ title, composer, performers, id }: { title
                 </Text>
             </Card.Body>
             <Card.Footer display="flex" justifyContent="flex-end" p={4}>
-                <Button variant="outline" colorScheme="red" onClick={() => handleDeletePerformance(id)}>Delete</Button>
+                <Button onClick={() => handleDeletePerformance(id)}>Delete</Button>
             </Card.Footer>
         </Card.Root>
     );
