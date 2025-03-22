@@ -44,11 +44,11 @@ Input {
 Dialog {
   border-color: var(--border);
   background: var(--background-secondary);
-  color: black;
+  color: var(--text-primary);
 }
 
 Dialog.Title {
-  color: black;
+  color: var(--text-primary);
 }
 
 Field.Label {
@@ -66,4 +66,9 @@ Button {
 
 Label {
   color: var(--text-primary);
+}
+
+::selection {
+  background-color: var(--text-tertiary);
+  color: var(--foreground);
 }

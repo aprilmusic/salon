@@ -1,6 +1,8 @@
 import { Button, Heading } from "@chakra-ui/react";
 import { Text, Card } from "@chakra-ui/react";
 import { Playfair_Display } from "next/font/google";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 const playfair = Playfair_Display({
     subsets: ["latin"],
@@ -36,16 +38,31 @@ const handleDeletePerformance = async (id: string, concertId: string, passcode: 
     }
 }
 
-export default function Performance({ 
-    title, 
-    composer, 
-    performers, 
+export default function Performance({
+    title,
+    composer,
+    performers,
     id,
     concertId,
     passcode,
     isAuthenticated,
     onRequestAuth
 }: PerformanceProps) {
+    const {
+        attributes,
+        listeners,
+        setNodeRef,
+        transform,
+        transition,
+        isDragging
+    } = useSortable({ id });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        opacity: isDragging ? 0.5 : 1,
+        cursor: 'grab',
+    };
     const handleDelete = () => {
         if (!isAuthenticated) {
             onRequestAuth();
@@ -56,9 +73,15 @@ export default function Performance({
 
     return (
         <Card.Root
+            ref={setNodeRef}
+            style={style}
+            {...attributes}
+            {...listeners}
             bg="var(--background-secondary)"
             backdropFilter="blur(8px)"
             borderColor="var(--border)"
+            _hover={{ cursor: 'grab' }}
+            _active={{ cursor: 'grabbing' }}
         >
             <Card.Body p={4} fontFamily={playfair.className}>
                 <Heading

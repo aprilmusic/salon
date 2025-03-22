@@ -6,7 +6,6 @@ import { useRouter } from "next/router";
 import { GetConcertByIdResponse, getConcertByIdResponseSchema } from "../api/concerts/[id]";
 import { Spinner } from "@chakra-ui/react"
 
-
 const cormorant = Cormorant_Garamond({
     subsets: ["latin"],
     weight: ["300", "400", "600"],
@@ -16,6 +15,7 @@ export default function ConcertPage() {
     const [concert, setConcert] = useState<GetConcertByIdResponse | null>(null);
     const router = useRouter();
     const { id } = router.query;
+
     useEffect(() => {
         async function fetchConcert() {
             try {
@@ -29,8 +29,8 @@ export default function ConcertPage() {
         }
         fetchConcert();
     }, [id]);
-    return (
 
+    return (
         <Box
             as="main"
             minH="100vh"
@@ -40,7 +40,10 @@ export default function ConcertPage() {
             fontFamily={cormorant.className}
         >
             {concert?.success ? (
-                <Concert concert={concert.result} />) : (<Spinner />)}
+                <Concert concert={concert.result} />
+            ) : (
+                <Spinner />
+            )}
         </Box>
     );
 }

@@ -247,6 +247,11 @@ export default function ConcertListPage() {
                             >
                                 {new Date(concert.date).toLocaleDateString()}
                             </Heading>
+                            {isAdmin && (
+                                <Text color="var(--text-tertiary)" fontSize="sm" mb={4}>
+                                    Passcode: {concert.passcode}
+                                </Text>
+                            )}
                             <Box display="flex" flexDirection="column" gap={4}>
                                 {concert.performances.map((performance) => (
                                     <Box key={performance.id}>

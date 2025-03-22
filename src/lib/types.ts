@@ -5,7 +5,7 @@ export const performanceSchema = z.object({
     title: z.string(),
     composer: z.string(),
     performers: z.string(),
-    order: z.number()
+    order: z.string()
 })
 
 export type Performance = z.infer<typeof performanceSchema>
