@@ -2,14 +2,24 @@ import { concertSchema, makeResponseSchema } from '@/lib/types'
 import { PrismaClient } from '@prisma/client'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { z } from 'zod'
+import { parse } from 'cookie'
 
 const prisma = new PrismaClient()
+const ADMIN_COOKIE_NAME = 'admin_token';
+const ADMIN_COOKIE_VALUE = process.env.ADMIN_SECRET || 'your-secure-secret-here';
 
 export default async function requestHandler(request: NextApiRequest, response: NextApiResponse) {
     if (request.method === 'GET') {
         const result = await handleGetConcerts(getConcertsParamsSchema.parse(request.query))
         response.status(200).json(result)
     } else if (request.method === 'POST') {
+        const cookies = parse(request.headers.cookie || '');
+        const adminToken = cookies[ADMIN_COOKIE_NAME];
+
+        if (adminToken !== ADMIN_COOKIE_VALUE) {
+            return response.status(401).json({ success: false, error: { message: 'Unauthorized' } });
+        }
+
         const result = await handleCreateConcert(createConcertParamsSchema.parse(request.body))
         response.status(200).json(result)
     } else {

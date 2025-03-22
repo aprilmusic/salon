@@ -5,6 +5,7 @@ import { Box } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { GetLatestConcertResponse, getLatestConcertResponseSchema } from "./api/concerts/latest";
 import { Spinner } from "@chakra-ui/react"
+import { useAdmin } from "@/lib/hooks/useAdmin";
 
 
 const cormorant = Cormorant_Garamond({
@@ -14,6 +15,8 @@ const cormorant = Cormorant_Garamond({
 
 export default function Home() {
   const [concert, setConcert] = useState<GetLatestConcertResponse | null>(null);
+  const { isAdmin } = useAdmin();
+
   useEffect(() => {
     async function fetchLatestConcert() {
       try {
@@ -42,6 +45,9 @@ export default function Home() {
         px={8}
         fontFamily={cormorant.className}
       >
+        {isAdmin && (
+          <div className="text-4xl mb-4 text-center">🎵</div>
+        )}
         {concert?.success ? (
           <Concert concert={concert.result} />) : (<Spinner />)}
       </Box>

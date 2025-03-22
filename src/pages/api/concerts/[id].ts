@@ -3,9 +3,11 @@ import { NextApiResponse } from 'next'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
 import { concertSchema, makeResponseSchema } from '@/lib/types'
+import { parse } from 'cookie'
 
 const prisma = new PrismaClient()
-
+const ADMIN_COOKIE_NAME = 'admin_token';
+const ADMIN_COOKIE_VALUE = process.env.ADMIN_SECRET || 'your-secure-secret-here';
 
 export default async function requestHandler(request: NextApiRequest, response: NextApiResponse) {
     if (request.method === 'GET') {
@@ -17,6 +19,13 @@ export default async function requestHandler(request: NextApiRequest, response: 
         const result = await handleUpdateConcertById(handleUpdateConcertByIdParamsSchema.parse({ ...request.query, ...request.body }))
         return response.status(200).json(result)
     } else if (request.method === 'DELETE') {
+        const cookies = parse(request.headers.cookie || '');
+        const adminToken = cookies[ADMIN_COOKIE_NAME];
+
+        if (adminToken !== ADMIN_COOKIE_VALUE) {
+            return response.status(401).json({ success: false, error: { message: 'Unauthorized' } });
+        }
+
         const result = await handleDeleteConcertById(handleDeleteConcertByIdParamsSchema.parse({
             id: request.query.id as string,
             passcode: request.body.passcode

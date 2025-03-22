@@ -9,6 +9,8 @@ import {
     Dialog, Field, Input, Portal, Stack, Card
 
 } from "@chakra-ui/react";
+import { useAdmin } from "@/lib/hooks/useAdmin";
+
 const playfair = Playfair_Display({
     subsets: ["latin"],
     weight: ["400", "600"],
@@ -22,6 +24,8 @@ interface ConcertFormValues {
 
 
 export default function ConcertListPage() {
+
+    const { isAdmin } = useAdmin()
 
     const [concerts, setConcerts] = useState<GetConcertsResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -140,6 +144,7 @@ export default function ConcertListPage() {
                 </Text>
             )}
 
+            {isAdmin && (
             <Dialog.Root  >
                 <Dialog.Trigger asChild>
                     <Button p={4} marginBottom={4}>+ New concert</Button>
@@ -180,7 +185,8 @@ export default function ConcertListPage() {
                         </Dialog.Content>
                     </Dialog.Positioner>
                 </Portal>
-            </Dialog.Root>
+                </Dialog.Root>
+            )}
 
             {/* Delete Confirmation Dialog */}
             <Dialog.Root open={!!concertToDelete} onOpenChange={(isOpen) => !isOpen && setConcertToDelete(null)}>
@@ -250,11 +256,13 @@ export default function ConcertListPage() {
                                     </Box>
                                 ))}
                             </Box>
-                            <Button alignSelf="flex-end" paddingX={8} onClick={(e) => {
-                                e.stopPropagation();
-                                e.preventDefault();
-                                setConcertToDelete(concert.id);
-                            }}>Delete</Button>
+                            {isAdmin && (
+                                <Button alignSelf="flex-end" paddingX={8} onClick={(e) => {
+                                    e.stopPropagation();
+                                    e.preventDefault();
+                                    setConcertToDelete(concert.id);
+                                }}>Delete</Button>
+                            )}
                         </Card.Body>
                     </Card.Root>
                 )) : (

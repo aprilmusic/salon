@@ -141,7 +141,7 @@ export default function Concert({ concert }: { concert: Concert }) {
                                 backdropFilter="blur(8px)"
                                 borderColor="var(--border">
                                 <Dialog.Header>
-                                    <Dialog.Title>Access Required</Dialog.Title>
+                                    <Dialog.Title sx={{color: "var(--text-primary)"}}>Access Required</Dialog.Title>
                                 </Dialog.Header>
                                 <Dialog.Body pb="4">
                                     <Text mb={4}>This concert requires a password to view.</Text>
