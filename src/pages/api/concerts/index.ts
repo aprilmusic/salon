@@ -41,7 +41,12 @@ export async function handleGetConcerts(_: GetConcertsParams): Promise<GetConcer
             }
         })
 
-        return { success: true, result: concerts }
+        return {
+            success: true, result: concerts.map(concert => ({
+                ...concert,
+                date: concert.date.toISOString()
+            }))
+        }
     } catch (error) {
         console.error('Error fetching concerts:', error)
         return {
@@ -83,7 +88,12 @@ export async function handleCreateConcert({ performances, ...concertData }: Crea
             }
         })
 
-        return { success: true, result: concert }
+        return {
+            success: true, result: {
+                ...concert,
+                date: concert.date.toISOString()
+            }
+        }
     } catch (error) {
         console.error('Error creating concert:', error)
         return { success: false, error: { message: 'Failed to create concert' } }

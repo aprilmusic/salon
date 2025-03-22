@@ -12,12 +12,12 @@ export type Performance = z.infer<typeof performanceSchema>
 
 export const concertSchema = z.object({
     id: z.string(),
-    date: z.string(),
+    date: z.string()
     passcode: z.string(),
     performances: z.array(performanceSchema)
 })
 
-export type Concert = z.infer<typeof concertSchema>
+export type Concert = z.input<typeof concertSchema>
 
 export const errorSchema = z.object({
     message: z.string(),

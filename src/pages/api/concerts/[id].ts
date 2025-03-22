@@ -53,7 +53,12 @@ async function handleGetConcertById(
             return { success: false, error: { message: 'Concert not found' } }
         }
 
-        return { success: true, result: concert }
+        return {
+            success: true, result: {
+                ...concert,
+                date: concert.date.toISOString()
+            }
+        }
     } catch (error) {
         console.error('Error fetching concert:', error)
         return { success: false, error: { message: `Failed to fetch concert. ${JSON.stringify(error)}` } }

@@ -43,7 +43,12 @@ export async function handleGetLatestConcert(_: GetLatestConcertParams): Promise
             return { success: false, error: { message: 'No concerts found' } }
         }
 
-        return { success: true, result: latestConcert }
+        return {
+            success: true, result: {
+                ...latestConcert,
+                date: latestConcert.date.toISOString()
+            }
+        }
     } catch (error) {
         console.error('Error fetching latest concert:', error)
         return { success: false, error: { message: 'Failed to fetch latest concert' } }
