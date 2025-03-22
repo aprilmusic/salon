@@ -317,7 +317,7 @@ export default function Concert({ concert }: { concert: Concert }) {
                 <Button p={4} onClick={() => {
                     window.location.href = `/concerts`
                 }} alignSelf="flex-start" >
-                    Back to all concerts
+                    All concerts
                 </Button>
                 {isAdmin && (
                     <Button p={4} onClick={() => setIsEditDialogOpen(true)}>
