@@ -21,6 +21,7 @@ interface PerformanceFormValues {
 interface EditConcertFormValues {
     date: string;
     passcode: string;
+    frozen: boolean;
 }
 
 const playfair = Playfair_Display({
@@ -90,6 +91,9 @@ export default function Concert({ concert }: { concert: Concert }) {
     const [error, setError] = useState<string | null>(null);
     const [performanceFormError, setPerformanceFormError] = useState<string | null>(null);
     const { isAdmin } = useAdmin();
+
+    // Use the frozen state directly from the concert
+    const isFrozen = concert.frozen;
 
     const {
         register: registerPerformanceForm,
@@ -262,20 +266,31 @@ export default function Concert({ concert }: { concert: Concert }) {
 
     const onSubmitEdit = handleSubmitEditForm(async (data) => {
         try {
+            console.log('Submitting edit form with data:', data);
+
+            const requestBody = {
+                date: new Date(data.date).toISOString(),
+                passcode: data.passcode,
+                frozen: data.frozen,
+            };
+
+            console.log('Request body:', requestBody);
+
             const response = await fetch(`/api/concerts/${concert.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({
-                    date: new Date(data.date).toISOString(),
-                    passcode: data.passcode,
-                }),
+                body: JSON.stringify(requestBody),
             });
+
             const result = await response.json();
+            console.log('Response from server:', result);
+
             if (!result.success) {
                 throw new Error(result.error.message);
             }
+
             setIsEditDialogOpen(false);
             resetEditForm();
             window.location.reload();
@@ -322,7 +337,7 @@ export default function Concert({ concert }: { concert: Concert }) {
                 Salon ({new Date(concert.date).toLocaleDateString()})
             </Heading>
 
-            <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <DndContext collisionDetection={closestCenter} onDragEnd={!isFrozen ? handleDragEnd : undefined}>
                 <SortableContext items={performances.map(p => p.id)} strategy={verticalListSortingStrategy}>
                     <Box display="flex" flexDirection="column" gap={8} paddingBottom={8}>
                         {performances.map((item) => (
@@ -334,6 +349,7 @@ export default function Concert({ concert }: { concert: Concert }) {
                                 performers={item.performers}
                                 concertId={concert.id}
                                 passcode={concert.passcode}
+                                isFrozen={isFrozen}
                             />
                         ))}
                     </Box>
@@ -341,74 +357,81 @@ export default function Concert({ concert }: { concert: Concert }) {
             </DndContext>
 
             {/* Add Performance Dialog */}
-            <Dialog.Root>
-                <Dialog.Trigger asChild>
-                    <Button p={4} marginBottom={4}>+ New performance</Button>
-                </Dialog.Trigger>
-                <Portal>
-                    <Dialog.Backdrop />
-                    <Dialog.Positioner>
-                        <Dialog.Content p={4}
-                            bg="var(--background)"
-                            backdropFilter="blur(8px)"
-                            borderColor="var(--border)">
-                            <Dialog.Header>
-                                <Dialog.Title color="var(--text-primary)">Add a performance</Dialog.Title>
-                            </Dialog.Header>
-                            <Dialog.Body pb="4">
-                                <form onSubmit={onSubmitCreatePerformance}>
-                                    <Stack gap="4" align="flex-start" maxW="sm">
-                                        <Field.Root>
-                                            <Field.Label>Title</Field.Label>
-                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("title", { required: "Title is required" })} />
-                                            {errorsPerformanceForm.title && (
-                                                <Text color="red.500" fontSize="sm">{errorsPerformanceForm.title.message}</Text>
-                                            )}
-                                        </Field.Root>
-                                        <Field.Root>
-                                            <Field.Label>Composer</Field.Label>
-                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("composer", { required: "Composer is required" })} />
-                                            {errorsPerformanceForm.composer && (
-                                                <Text color="red.500" fontSize="sm">{errorsPerformanceForm.composer.message}</Text>
-                                            )}
-                                        </Field.Root>
-                                        <Field.Root>
-                                            <Field.Label>Performers</Field.Label>
-                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("performers", { required: "Performers are required" })} />
-                                            {errorsPerformanceForm.performers && (
-                                                <Text color="red.500" fontSize="sm">{errorsPerformanceForm.performers.message}</Text>
-                                            )}
-                                        </Field.Root>
-                                        <Field.Root>
-                                            <Field.Label>Concert Password</Field.Label>
-                                            <Input
-                                                type="password"
-                                                paddingLeft={1}
-                                                color="black"
-                                                {...registerPerformanceForm("passcode", { required: "Password is required" })}
-                                            />
-                                            {errorsPerformanceForm.passcode && (
-                                                <Text color="red.500" fontSize="sm">{errorsPerformanceForm.passcode.message}</Text>
-                                            )}
-                                            {performanceFormError && (
-                                                <Text color="red.500" fontSize="sm">{performanceFormError}</Text>
-                                            )}
-                                        </Field.Root>
-                                    </Stack>
-                                </form>
-                            </Dialog.Body>
-                            <Dialog.Footer>
-                                <Dialog.ActionTrigger asChild>
-                                    <Button px={2}>Cancel</Button>
-                                </Dialog.ActionTrigger>
-                                <Dialog.ActionTrigger asChild>
-                                    <Button px={2} onClick={onSubmitCreatePerformance}>Save</Button>
-                                </Dialog.ActionTrigger>
-                            </Dialog.Footer>
-                        </Dialog.Content>
-                    </Dialog.Positioner>
-                </Portal>
-            </Dialog.Root>
+            {!isFrozen && (
+                <Dialog.Root>
+                    <Dialog.Trigger asChild>
+                        <Button
+                            p={4}
+                            marginBottom={4}
+                        >
+                            + New performance
+                        </Button>
+                    </Dialog.Trigger>
+                    <Portal>
+                        <Dialog.Backdrop />
+                        <Dialog.Positioner>
+                            <Dialog.Content p={4}
+                                bg="var(--background)"
+                                backdropFilter="blur(8px)"
+                                borderColor="var(--border)">
+                                <Dialog.Header>
+                                    <Dialog.Title color="var(--text-primary)">Add a performance</Dialog.Title>
+                                </Dialog.Header>
+                                <Dialog.Body pb="4">
+                                    <form onSubmit={onSubmitCreatePerformance}>
+                                        <Stack gap="4" align="flex-start" maxW="sm">
+                                            <Field.Root>
+                                                <Field.Label>Title</Field.Label>
+                                                <Input paddingLeft={1} color="black" {...registerPerformanceForm("title", { required: "Title is required" })} />
+                                                {errorsPerformanceForm.title && (
+                                                    <Text color="red.500" fontSize="sm">{errorsPerformanceForm.title.message}</Text>
+                                                )}
+                                            </Field.Root>
+                                            <Field.Root>
+                                                <Field.Label>Composer</Field.Label>
+                                                <Input paddingLeft={1} color="black" {...registerPerformanceForm("composer", { required: "Composer is required" })} />
+                                                {errorsPerformanceForm.composer && (
+                                                    <Text color="red.500" fontSize="sm">{errorsPerformanceForm.composer.message}</Text>
+                                                )}
+                                            </Field.Root>
+                                            <Field.Root>
+                                                <Field.Label>Performers</Field.Label>
+                                                <Input paddingLeft={1} color="black" {...registerPerformanceForm("performers", { required: "Performers are required" })} />
+                                                {errorsPerformanceForm.performers && (
+                                                    <Text color="red.500" fontSize="sm">{errorsPerformanceForm.performers.message}</Text>
+                                                )}
+                                            </Field.Root>
+                                            <Field.Root>
+                                                <Field.Label>Concert Password</Field.Label>
+                                                <Input
+                                                    type="password"
+                                                    paddingLeft={1}
+                                                    color="black"
+                                                    {...registerPerformanceForm("passcode", { required: "Password is required" })}
+                                                />
+                                                {errorsPerformanceForm.passcode && (
+                                                    <Text color="red.500" fontSize="sm">{errorsPerformanceForm.passcode.message}</Text>
+                                                )}
+                                                {performanceFormError && (
+                                                    <Text color="red.500" fontSize="sm">{performanceFormError}</Text>
+                                                )}
+                                            </Field.Root>
+                                        </Stack>
+                                    </form>
+                                </Dialog.Body>
+                                <Dialog.Footer>
+                                    <Dialog.ActionTrigger asChild>
+                                        <Button px={2}>Cancel</Button>
+                                    </Dialog.ActionTrigger>
+                                    <Dialog.ActionTrigger asChild>
+                                        <Button px={2} onClick={onSubmitCreatePerformance}>Save</Button>
+                                    </Dialog.ActionTrigger>
+                                </Dialog.Footer>
+                            </Dialog.Content>
+                        </Dialog.Positioner>
+                    </Portal>
+                </Dialog.Root>
+            )}
 
             {/* Edit Dialog */}
             <Dialog.Root open={isEditDialogOpen} onOpenChange={(isOpen) => !isOpen && setIsEditDialogOpen(false)}>
@@ -446,6 +469,28 @@ export default function Concert({ concert }: { concert: Concert }) {
                                                     value: concert.passcode
                                                 })}
                                             />
+                                        </Field.Root>
+                                        <Field.Root>
+                                            <Field.Label>Concert Status</Field.Label>
+                                            <select
+                                                {...registerEditForm("frozen", {
+                                                    setValueAs: (value) => value === "true",
+                                                })}
+                                                defaultValue={concert.frozen ? "true" : "false"}
+                                                style={{
+                                                    padding: "8px",
+                                                    borderRadius: "4px",
+                                                    border: "1px solid var(--border)",
+                                                    backgroundColor: "white",
+                                                    color: "black"
+                                                }}
+                                            >
+                                                <option value="false">Editable (performances can be modified)</option>
+                                                <option value="true">Frozen (no modifications allowed)</option>
+                                            </select>
+                                            <Text fontSize="sm" color="gray.500" mt={2}>
+                                                When a concert is frozen, performances cannot be added, deleted, or reordered by anyone
+                                            </Text>
                                         </Field.Root>
                                         {error && (
                                             <Text color="red.500" fontSize="sm">

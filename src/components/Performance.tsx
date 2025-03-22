@@ -17,6 +17,7 @@ interface PerformanceProps {
     id: string;
     concertId: string;
     passcode: string;
+    isFrozen?: boolean;
 }
 
 const handleDeletePerformance = async (id: string, concertId: string, passcode: string) => {
@@ -44,6 +45,7 @@ export default function Performance({
     id,
     concertId,
     passcode,
+    isFrozen = false,
 }: PerformanceProps) {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [enteredPassword, setEnteredPassword] = useState("");
@@ -56,13 +58,16 @@ export default function Performance({
         transform,
         transition,
         isDragging
-    } = useSortable({ id });
+    } = useSortable({
+        id,
+        disabled: isFrozen,
+    });
 
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
         opacity: isDragging ? 0.5 : 1,
-        cursor: 'grab',
+        cursor: isFrozen ? 'default' : 'grab',
     };
 
     const handleOpenDeleteDialog = () => {
@@ -88,19 +93,19 @@ export default function Performance({
     return (
         <>
             <Box position="relative" width="100%">
-                {/* Main card content - draggable */}
+                {/* Main card content - draggable only if not frozen */}
                 <Card.Root
                     ref={setNodeRef}
                     style={style}
-                    {...attributes}
-                    {...listeners}
+                    {...(!isFrozen ? { ...attributes, ...listeners } : {})}
                     bg="var(--background-secondary)"
                     backdropFilter="blur(8px)"
                     borderColor="var(--border)"
-                    _hover={{ cursor: 'grab' }}
-                    _active={{ cursor: 'grabbing' }}
+                    _hover={{ cursor: isFrozen ? 'default' : 'grab' }}
+                    _active={{ cursor: isFrozen ? 'default' : 'grabbing' }}
                     width="100%"
                     minHeight="160px"
+                    title={isFrozen ? "This concert is frozen. Performances cannot be reordered." : ""}
                 >
                     <Card.Body p={6} fontFamily={playfair.className}>
                         <Heading
@@ -122,20 +127,22 @@ export default function Performance({
                     </Card.Body>
                 </Card.Root>
 
-                {/* Delete button positioned absolutely */}
-                <Box
-                    position="absolute"
-                    bottom={6}
-                    right={6}
-                    zIndex={2}
-                >
-                    <Button
-                        px={4}
-                        onClick={handleOpenDeleteDialog}
+                {/* Delete button positioned absolutely - only enabled if not frozen */}
+                {!isFrozen && (
+                    <Box
+                        position="absolute"
+                        bottom={6}
+                        right={6}
+                        zIndex={2}
                     >
-                        Delete
-                    </Button>
-                </Box>
+                        <Button
+                            px={4}
+                            onClick={handleOpenDeleteDialog}
+                        >
+                            Delete
+                        </Button>
+                    </Box>
+                )}
             </Box>
 
             {/* Delete Dialog */}

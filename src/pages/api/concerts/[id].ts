@@ -11,12 +11,15 @@ const ADMIN_COOKIE_VALUE = process.env.ADMIN_SECRET || 'your-secure-secret-here'
 
 export default async function requestHandler(request: NextApiRequest, response: NextApiResponse) {
     if (request.method === 'GET') {
-        console.log(request.query.id)
-        console.log(request.body)
+        console.log('GET concert by ID:', request.query.id);
         const result = await handleGetConcertById(getConcertByIdParamsSchema.parse(request.query))
         return response.status(200).json(result)
     } else if (request.method === 'PATCH') {
-        const result = await handleUpdateConcertById(handleUpdateConcertByIdParamsSchema.parse({ ...request.query, ...request.body }))
+        console.log('PATCH concert:', request.query.id);
+        console.log('Request body:', request.body);
+        const parsedData = handleUpdateConcertByIdParamsSchema.parse({ ...request.query, ...request.body });
+        console.log('Parsed data after validation:', parsedData);
+        const result = await handleUpdateConcertById(parsedData);
         return response.status(200).json(result)
     } else if (request.method === 'DELETE') {
         const cookies = parse(request.headers.cookie || '');
@@ -82,8 +85,8 @@ async function handleGetConcertById(
 const handleUpdateConcertByIdParamsSchema = z.object({
     id: z.string(),
     date: z.string().optional(),
-    passcode: z.string().optional()
-
+    passcode: z.string().optional(),
+    frozen: z.boolean().optional()
 })
 type HandleUpdateConcertByIdParams = z.infer<typeof handleUpdateConcertByIdParamsSchema>
 
@@ -94,6 +97,8 @@ async function handleUpdateConcertById(
     { id, ...data }: HandleUpdateConcertByIdParams,
 ): Promise<HandleUpdateConcertByIdResponse> {
     try {
+        console.log('Update concert params:', { id, data });
+
         const result = await prisma.concert.update({
             where: {
                 id
@@ -107,6 +112,13 @@ async function handleUpdateConcertById(
                 }
             }
         })
+
+        console.log('Updated concert result:', {
+            id: result.id,
+            date: result.date,
+            frozen: result.frozen
+        });
+
         return {
             success: true,
             result: {

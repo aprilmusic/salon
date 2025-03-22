@@ -14,6 +14,7 @@ export const concertSchema = z.object({
     id: z.string(),
     date: z.string(),
     passcode: z.string(),
+    frozen: z.boolean().default(false),
     performances: z.array(performanceSchema)
 })
 
