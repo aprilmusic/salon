@@ -165,10 +165,10 @@ export default function Concert({ concert }: { concert: Concert }) {
                                     </form>
                                 </Dialog.Body>
                                 <Dialog.Footer>
-                                    <Button variant="outline" onClick={() => window.location.href = `/concerts`}>
+                                    <Button px={2} onClick={() => window.location.href = `/concerts`}>
                                         Go Back
                                     </Button>
-                                    <Button onClick={onSubmitPassword}>
+                                    <Button px={2} onClick={onSubmitPassword}>
                                         Submit
                                     </Button>
                                 </Dialog.Footer>

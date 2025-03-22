@@ -211,10 +211,10 @@ export default function ConcertListPage() {
                             </Dialog.Body>
                             <Dialog.Footer>
                                 <Dialog.ActionTrigger asChild>
-                                    <Button variant="outline" onClick={() => setConcertToDelete(null)}>Cancel</Button>
+                                    <Button px={2} onClick={() => setConcertToDelete(null)}>Cancel</Button>
                                 </Dialog.ActionTrigger>
                                 <Dialog.ActionTrigger asChild>
-                                    <Button colorScheme="red" onClick={onSubmitDelete}>Delete</Button>
+                                    <Button px={2} onClick={onSubmitDelete}>Delete</Button>
                                 </Dialog.ActionTrigger>
                             </Dialog.Footer>
                         </Dialog.Content>
