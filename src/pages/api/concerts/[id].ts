@@ -17,7 +17,10 @@ export default async function requestHandler(request: NextApiRequest, response: 
         const result = await handleUpdateConcertById(handleUpdateConcertByIdParamsSchema.parse({ ...request.query, ...request.body }))
         return response.status(200).json(result)
     } else if (request.method === 'DELETE') {
-        const result = await handleDeleteConcertById(handleDeleteConcertByIdParamsSchema.parse(request.query))
+        const result = await handleDeleteConcertById(handleDeleteConcertByIdParamsSchema.parse({
+            id: request.query.id as string,
+            passcode: request.body.passcode
+        }))
         return response.status(200).json(result)
     } else {
         response.setHeader('Allow', ['GET', 'PATCH', 'DELETE'])
@@ -112,7 +115,8 @@ async function handleUpdateConcertById(
 }
 
 const handleDeleteConcertByIdParamsSchema = z.object({
-    id: z.string()
+    id: z.string(),
+    passcode: z.string()
 })
 type HandleDeleteConcertByIdParams = z.infer<typeof handleDeleteConcertByIdParamsSchema>
 
@@ -120,9 +124,23 @@ export const handleDeleteConcertByIdResponseSchema = makeResponseSchema(z.object
 export type HandleDeleteConcertByIdResponse = z.infer<typeof handleDeleteConcertByIdResponseSchema>
 
 async function handleDeleteConcertById(
-    { id }: HandleDeleteConcertByIdParams
+    { id, passcode }: HandleDeleteConcertByIdParams
 ): Promise<HandleDeleteConcertByIdResponse> {
     try {
+        // First verify the concert exists and check the passcode
+        const concert = await prisma.concert.findUnique({
+            where: { id }
+        });
+
+        if (!concert) {
+            return { success: false, error: { message: 'Concert not found' } };
+        }
+
+        if (concert.passcode !== passcode) {
+            return { success: false, error: { message: 'Invalid passcode' } };
+        }
+
+        // If passcode is correct, proceed with deletion
         await prisma.concert.delete({ where: { id } })
         return { success: true, result: { success: true } }
     } catch (error) {
@@ -131,5 +149,4 @@ async function handleDeleteConcertById(
     } finally {
         await prisma.$disconnect()
     }
-   
 }

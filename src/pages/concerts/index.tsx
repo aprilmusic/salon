@@ -26,12 +26,20 @@ export default function ConcertListPage() {
     const [concerts, setConcerts] = useState<GetConcertsResponse | null>(null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [concertToDelete, setConcertToDelete] = useState<string | null>(null);
 
     const {
         register: registerConcertForm,
         handleSubmit: handleSubmitConcertForm,
         formState: { errors: errorsConcertForm },
     } = useForm<ConcertFormValues>()
+
+    const {
+        register: registerDeleteForm,
+        handleSubmit: handleSubmitDeleteForm,
+        formState: { errors: errorsDeleteForm },
+        reset: resetDeleteForm,
+    } = useForm<{ passcode: string }>()
 
 
     const onSubmitCreateConcert = handleSubmitConcertForm((data) => {
@@ -70,20 +78,32 @@ export default function ConcertListPage() {
         }
     }
 
-    const deleteConcert = async (id: string) => {
+    const deleteConcert = async (id: string, passcode: string) => {
         try {
             const response = await fetch(`/api/concerts/${id}`, {
                 method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ passcode }),
             });
             const data = await response.json();
             if (!data.success) {
                 throw new Error(data.error.message)
             }
+            setConcertToDelete(null);
+            resetDeleteForm();
             window.location.reload()
         } catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         }
     }
+
+    const onSubmitDelete = handleSubmitDeleteForm((data) => {
+        if (concertToDelete) {
+            deleteConcert(concertToDelete, data.passcode);
+        }
+    });
 
     useEffect(() => {
         async function fetchConcerts() {
@@ -161,6 +181,47 @@ export default function ConcertListPage() {
                     </Dialog.Positioner>
                 </Portal>
             </Dialog.Root>
+
+            {/* Delete Confirmation Dialog */}
+            <Dialog.Root open={!!concertToDelete} onOpenChange={(isOpen) => !isOpen && setConcertToDelete(null)}>
+                <Portal>
+                    <Dialog.Backdrop />
+                    <Dialog.Positioner>
+                        <Dialog.Content p={4}
+                            bg="var(--background)"
+                            backdropFilter="blur(8px)"
+                            borderColor="var(--text-primary)">
+                            <Dialog.Header>
+                                <Dialog.Title color="var(--text-primary)">Wait! Are you sure?</Dialog.Title>
+                            </Dialog.Header>
+                            <Dialog.Body pb="4">
+                                <form onSubmit={onSubmitDelete}>
+                                    <Stack gap="4" align="flex-start" maxW="sm">
+                                        <Field.Root invalid={!!errorsDeleteForm.passcode}>
+                                            <Field.Label>Enter concert passcode to confirm deletion</Field.Label>
+                                            <Input 
+                                                paddingLeft={1} 
+                                                color="black" 
+                                                type="password"
+                                                {...registerDeleteForm("passcode", { required: "Passcode is required" })} 
+                                            />
+                                        </Field.Root>
+                                    </Stack>
+                                </form>
+                            </Dialog.Body>
+                            <Dialog.Footer>
+                                <Dialog.ActionTrigger asChild>
+                                    <Button variant="outline" onClick={() => setConcertToDelete(null)}>Cancel</Button>
+                                </Dialog.ActionTrigger>
+                                <Dialog.ActionTrigger asChild>
+                                    <Button colorScheme="red" onClick={onSubmitDelete}>Delete</Button>
+                                </Dialog.ActionTrigger>
+                            </Dialog.Footer>
+                        </Dialog.Content>
+                    </Dialog.Positioner>
+                </Portal>
+            </Dialog.Root>
+
             <Box display="flex" flexDirection="column" gap={8}>
                 {concerts?.success ? concerts.result.map((concert) => (
                     <Card.Root
@@ -192,7 +253,7 @@ export default function ConcertListPage() {
                             <Button alignSelf="flex-end" paddingX={8} onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
-                                deleteConcert(concert.id)
+                                setConcertToDelete(concert.id);
                             }}>Delete</Button>
                         </Card.Body>
                     </Card.Root>
