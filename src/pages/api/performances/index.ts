@@ -20,7 +20,10 @@ export default async function requestHandler(request: NextApiRequest, response: 
 }
 
 
-const createPerformanceParamsSchema = performanceSchema.omit({ id: true }).extend({ concertId: z.string() })
+const createPerformanceParamsSchema = performanceSchema.omit({ id: true }).extend({
+    concertId: z.string(),
+    passcode: z.string()
+})
 type CreatePerformanceParams = z.infer<typeof createPerformanceParamsSchema>
 
 export const createPerformanceResponseSchema = makeResponseSchema(performanceSchema)
@@ -28,8 +31,26 @@ export type CreatePerformanceResponse = z.infer<typeof createPerformanceResponse
 
 export async function handleCreatePerformance(data: CreatePerformanceParams): Promise<CreatePerformanceResponse> {
     try {
+        // Verify the concert exists and check the passcode
+        const concert = await prisma.concert.findUnique({
+            where: { id: data.concertId }
+        });
+
+        if (!concert) {
+            return { success: false, error: { message: 'Concert not found' } };
+        }
+
+        if (concert.passcode !== data.passcode) {
+            return { success: false, error: { message: 'Invalid passcode' } };
+        }
+
+        // If passcode is correct, proceed with creation
+        // Remove passcode from data before creating the performance
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { passcode, ...performanceData } = data;
+
         const performance = await prisma.performance.create({
-            data
+            data: performanceData
         })
         return { success: true, result: performance }
     } catch (error) {
@@ -41,7 +62,7 @@ export async function handleCreatePerformance(data: CreatePerformanceParams): Pr
 }
 
 // delete performance
-const deletePerformanceParamsSchema = z.object({ 
+const deletePerformanceParamsSchema = z.object({
     id: z.string(),
     concertId: z.string(),
     passcode: z.string()

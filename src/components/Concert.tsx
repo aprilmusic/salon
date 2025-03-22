@@ -15,9 +15,6 @@ interface PerformanceFormValues {
     title: string
     composer: string
     performers: string
-}
-
-interface PasswordFormValues {
     passcode: string
 }
 
@@ -33,8 +30,11 @@ const playfair = Playfair_Display({
 
 // Add this helper function before the Concert component
 function generateOrderBetween(before: string, after: string): string {
+    console.log('generateOrderBetween called with:', { before, after });
+
     // If the strings are equal, append '0' to before
     if (before === after) {
+        console.log('Strings are equal, appending "0" to first string');
         return before + '0';
     }
 
@@ -43,49 +43,59 @@ function generateOrderBetween(before: string, after: string): string {
     while (i < before.length && i < after.length && before[i] === after[i]) {
         i++;
     }
+    console.log(`First difference at index ${i}: "${before.charAt(i) || 'end'}" vs "${after.charAt(i) || 'end'}"`);
 
     // If we reached the end of one string, append a character in the middle of the alphabet
     if (i === before.length) {
+        console.log('Reached end of first string, appending "m" to create new order');
         return before + 'm';
     }
     if (i === after.length) {
+        console.log('Reached end of second string, appending "m" to create new order');
         return after + 'm';
     }
 
     // Get the character codes
     const beforeChar = before.charCodeAt(i);
     const afterChar = after.charCodeAt(i);
+    console.log(`Character codes at position ${i}: ${beforeChar} (${String.fromCharCode(beforeChar)}) vs ${afterChar} (${String.fromCharCode(afterChar)})`);
 
     // Generate a character halfway between
     const midChar = Math.floor((beforeChar + afterChar) / 2);
+    console.log(`Calculated midpoint character code: ${midChar} (${String.fromCharCode(midChar)})`);
 
     // If they're adjacent, we need to extend the string
     if (midChar === beforeChar) {
+        console.log('Characters are adjacent in Unicode, extending first string with "m"');
         return before + 'm';
     }
 
-    return before.slice(0, i) + String.fromCharCode(midChar);
+    // Ensure the generated order is actually between the two strings
+    const result = before.slice(0, i) + String.fromCharCode(midChar);
+    console.log(`Generated candidate result: "${result}"`);
+
+    if (result <= before || result >= after) {
+        // If the result isn't between, append a character to create more space
+        console.log('Generated result is not properly between inputs, appending "m" to first string');
+        return before + 'm';
+    }
+
+    console.log(`Final result: "${result}" (lexicographically between "${before}" and "${after}")`);
+    return result;
 }
 
 export default function Concert({ concert }: { concert: Concert }) {
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-    const [authMessage, setAuthMessage] = useState<{ type: "success" | "error", text: string } | null>(null);
     const [performances, setPerformances] = useState(concert.performances);
     const [error, setError] = useState<string | null>(null);
+    const [performanceFormError, setPerformanceFormError] = useState<string | null>(null);
     const { isAdmin } = useAdmin();
-
-    const {
-        register: registerPasswordForm,
-        handleSubmit: handleSubmitPasswordForm,
-        formState: { errors: errorsPasswordForm },
-    } = useForm<PasswordFormValues>()
 
     const {
         register: registerPerformanceForm,
         handleSubmit: handleSubmitPerformanceForm,
         formState: { errors: errorsPerformanceForm },
+        reset: resetPerformanceForm,
     } = useForm<PerformanceFormValues>()
 
     const {
@@ -97,31 +107,16 @@ export default function Concert({ concert }: { concert: Concert }) {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const validatePassword = (enteredPassword: string) => {
-        return enteredPassword === concert.passcode;
-    }
+    const createPerformance = async ({ title, composer, performers, passcode }: PerformanceFormValues) => {
+        setPerformanceFormError(null);
 
-    const onSubmitPassword = handleSubmitPasswordForm((data) => {
-        if (validatePassword(data.passcode)) {
-            setIsAuthenticated(true);
-            setIsPasswordDialogOpen(false);
-            setAuthMessage({ type: "success", text: "Access granted" });
-        } else {
-            setAuthMessage({ type: "error", text: "Incorrect password" });
-        }
-    });
-
-    const createPerformance = async ({ title, composer, performers }: {
-        title: string;
-        composer: string;
-        performers: string;
-    }) => {
-        if (!isAuthenticated) {
-            setIsPasswordDialogOpen(true);
+        if (passcode !== concert.passcode) {
+            setPerformanceFormError("Incorrect password");
             return;
         }
 
         try {
+            setIsLoading(true);
             // Get the last performance's order or use 'a0' if no performances exist
             const lastPerformance = concert.performances[concert.performances.length - 1];
             const newOrder = lastPerformance
@@ -139,30 +134,20 @@ export default function Concert({ concert }: { concert: Concert }) {
                     composer,
                     performers,
                     order: newOrder,
+                    passcode,
                 }),
             });
             const data = await response.json();
             if (!data.success) {
                 throw new Error(data.error.message);
             }
+            resetPerformanceForm();
             window.location.reload();
         }
         catch (err) {
             setError(err instanceof Error ? err.message : 'An error occurred');
         } finally {
             setIsLoading(false);
-        }
-        const lastPerformance = concert.performances[concert.performances.length - 1];
-        return {
-            ...concert,
-            performances: [...concert.performances, {
-                title,
-                composer,
-                performers,
-                order: lastPerformance
-                    ? generateOrderBetween(lastPerformance.order, 'z0')
-                    : 'a0',
-            }]
         }
     }
 
@@ -182,19 +167,50 @@ export default function Concert({ concert }: { concert: Concert }) {
 
         console.log('Performance indices:', { oldIndex, newIndex });
 
+        // Get the moved performance's original order
+        const movedItem = performances[oldIndex];
+        console.log('Moving performance:', {
+            id: movedItem.id,
+            title: movedItem.title,
+            originalOrder: movedItem.order
+        });
+
         // Get the surrounding items' order strings
         const prevItem = newIndex > 0 ? performances[newIndex - 1] : null;
         const nextItem = newIndex < performances.length - 1 ? performances[newIndex + 1] : null;
 
-        console.log('Surrounding items:', { prevItem, nextItem });
+        // More detailed logging of surrounding items
+        console.log('Surrounding items for ordering:', {
+            prev: prevItem ? {
+                id: prevItem.id,
+                title: prevItem.title,
+                order: prevItem.order
+            } : 'None (using default "a0")',
+            next: nextItem ? {
+                id: nextItem.id,
+                title: nextItem.title,
+                order: nextItem.order
+            } : 'None (using default "z0")'
+        });
+
+        const beforeOrder = prevItem?.order || 'a0';
+        const afterOrder = nextItem?.order || 'z0';
+
+        console.log('Generating order between:', {
+            beforeOrder,
+            afterOrder,
+            explanation: 'Will generate a string that lexicographically sorts between these two values'
+        });
 
         // Generate a new order string that lexicographically sits between the two items
-        const newOrder = generateOrderBetween(
-            prevItem?.order || 'a0',
-            nextItem?.order || 'z0'
-        );
+        const newOrder = generateOrderBetween(beforeOrder, afterOrder);
 
-        console.log('Generated new order:', newOrder);
+        console.log('Order generation result:', {
+            inputBefore: beforeOrder,
+            inputAfter: afterOrder,
+            generatedOrder: newOrder,
+            verification: `${beforeOrder} < ${newOrder} < ${afterOrder}: ${beforeOrder < newOrder && newOrder < afterOrder}`
+        });
 
         // Update local state with new order
         const newPerformances = [...performances];
@@ -203,7 +219,12 @@ export default function Concert({ concert }: { concert: Concert }) {
         newPerformances.splice(newIndex, 0, movedPerformance);
         setPerformances(newPerformances);
 
-        console.log('Updated local state:', { movedPerformance, newPerformances });
+        console.log('Updated performance:', {
+            id: movedPerformance.id,
+            title: movedPerformance.title,
+            originalOrder: movedItem.order,
+            newOrder: movedPerformance.order
+        });
 
         // Update in database
         try {
@@ -304,75 +325,20 @@ export default function Concert({ concert }: { concert: Concert }) {
             <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={performances.map(p => p.id)} strategy={verticalListSortingStrategy}>
                     <Box display="flex" flexDirection="column" gap={8} paddingBottom={8}>
-                        {performances.map((item, index) => (
+                        {performances.map((item) => (
                             <Performance
-                                key={index}
+                                key={item.id}
                                 id={item.id}
                                 title={item.title}
                                 composer={item.composer}
                                 performers={item.performers}
                                 concertId={concert.id}
                                 passcode={concert.passcode}
-                                isAuthenticated={isAuthenticated}
-                                onRequestAuth={() => setIsPasswordDialogOpen(true)}
                             />
                         ))}
                     </Box>
                 </SortableContext>
             </DndContext>
-
-            {/* Password Dialog */}
-            <Dialog.Root
-                open={isPasswordDialogOpen}
-                onOpenChange={(details) => setIsPasswordDialogOpen(details.open)}
-            >
-                <Portal>
-                    <Dialog.Backdrop />
-                    <Dialog.Positioner>
-                        <Dialog.Content p={4}
-                            bg="var(--background)"
-                            backdropFilter="blur(8px)"
-                            borderColor="var(--border)">
-                            <Dialog.Header>
-                                <Dialog.Title>Authentication Required</Dialog.Title>
-                            </Dialog.Header>
-                            <Dialog.Body pb="4">
-                                <Text mb={4}>Please enter the concert password to modify performances.</Text>
-                                <form onSubmit={onSubmitPassword}>
-                                    <Stack gap="4" align="flex-start" maxW="sm">
-                                        <Field.Root invalid={!!errorsPasswordForm.passcode}>
-                                            <Field.Label>Password</Field.Label>
-                                            <Input
-                                                color="black"
-                                                type="password"
-                                                {...registerPasswordForm("passcode", { required: "Password is required" })}
-                                            />
-                                            {errorsPasswordForm.passcode && (
-                                                <Text color="red.500" fontSize="sm">{errorsPasswordForm.passcode.message}</Text>
-                                            )}
-                                        </Field.Root>
-                                        {authMessage && (
-                                            <Text color={authMessage.type === "success" ? "green.500" : "red.500"}>{authMessage.text}</Text>
-                                        )}
-                                    </Stack>
-                                </form>
-                            </Dialog.Body>
-                            <Dialog.Footer>
-                                <Dialog.ActionTrigger asChild>
-                                    <Button px={2} onClick={() => setIsPasswordDialogOpen(false)}>
-                                        Cancel
-                                    </Button>
-                                </Dialog.ActionTrigger>
-                                <Dialog.ActionTrigger asChild>
-                                    <Button px={2} onClick={onSubmitPassword}>
-                                        Submit
-                                    </Button>
-                                </Dialog.ActionTrigger>
-                            </Dialog.Footer>
-                        </Dialog.Content>
-                    </Dialog.Positioner>
-                </Portal>
-            </Dialog.Root>
 
             {/* Add Performance Dialog */}
             <Dialog.Root>
@@ -394,15 +360,39 @@ export default function Concert({ concert }: { concert: Concert }) {
                                     <Stack gap="4" align="flex-start" maxW="sm">
                                         <Field.Root>
                                             <Field.Label>Title</Field.Label>
-                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("title")} />
+                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("title", { required: "Title is required" })} />
+                                            {errorsPerformanceForm.title && (
+                                                <Text color="red.500" fontSize="sm">{errorsPerformanceForm.title.message}</Text>
+                                            )}
                                         </Field.Root>
-                                        <Field.Root invalid={!!errorsPerformanceForm.composer}>
+                                        <Field.Root>
                                             <Field.Label>Composer</Field.Label>
-                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("composer")} />
+                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("composer", { required: "Composer is required" })} />
+                                            {errorsPerformanceForm.composer && (
+                                                <Text color="red.500" fontSize="sm">{errorsPerformanceForm.composer.message}</Text>
+                                            )}
                                         </Field.Root>
-                                        <Field.Root invalid={!!errorsPerformanceForm.performers}>
+                                        <Field.Root>
                                             <Field.Label>Performers</Field.Label>
-                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("performers")} />
+                                            <Input paddingLeft={1} color="black" {...registerPerformanceForm("performers", { required: "Performers are required" })} />
+                                            {errorsPerformanceForm.performers && (
+                                                <Text color="red.500" fontSize="sm">{errorsPerformanceForm.performers.message}</Text>
+                                            )}
+                                        </Field.Root>
+                                        <Field.Root>
+                                            <Field.Label>Concert Password</Field.Label>
+                                            <Input
+                                                type="password"
+                                                paddingLeft={1}
+                                                color="black"
+                                                {...registerPerformanceForm("passcode", { required: "Password is required" })}
+                                            />
+                                            {errorsPerformanceForm.passcode && (
+                                                <Text color="red.500" fontSize="sm">{errorsPerformanceForm.passcode.message}</Text>
+                                            )}
+                                            {performanceFormError && (
+                                                <Text color="red.500" fontSize="sm">{performanceFormError}</Text>
+                                            )}
                                         </Field.Root>
                                     </Stack>
                                 </form>
