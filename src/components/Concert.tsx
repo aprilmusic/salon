@@ -7,7 +7,6 @@ import {
 } from "@chakra-ui/react";
 import { useState } from 'react';
 import { useForm } from "react-hook-form"
-import { createConcertResponseSchema } from "@/pages/api/concerts";
 import type { Concert } from "@/lib/types";
 
 
@@ -32,45 +31,6 @@ export default function Concert({ concert }: { concert: Concert }) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    const createConcert = async ({ dateString, passcode }: {
-        dateString: string;
-        passcode: string;
-    }) => {
-        try {
-            const response = await fetch('/api/concerts', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    date: new Date(dateString),
-                    passcode,
-                    performances: [
-                        // {
-                        //     id: 'newId', // TODO placeholder
-                        //     title: 'Great performance',
-                        //     composer: 'Some composer',
-                        //     performers: 'Amazing Performer',
-                        //     order: 0
-                        // },
-                    ],
-                }),
-            });
-            const data = await response.json();
-            const newConcert = createConcertResponseSchema.parse(data)
-            if (!newConcert.success) {
-                throw new Error(newConcert.error.message)
-            }
-            window.location.href = `/concerts/${newConcert.result.id}`
-        }
-        catch (err) {
-            setError(err instanceof Error ? err.message : 'An error occurred');
-        } finally {
-            setIsLoading(false);
-
-        }
-    }
 
 
     const createPerformance = async ({ title, composer, performers }: {

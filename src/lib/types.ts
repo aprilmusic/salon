@@ -25,6 +25,7 @@ export const errorSchema = z.object({
 export type ErrorResponse = z.infer<typeof errorSchema>
 
 // Generic zod schema that can either be an {success: true, data: T} or {success: false, error: E}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const makeResponseSchema = <T extends z.ZodType<any, any, any>>(
     data: T
 ) =>
