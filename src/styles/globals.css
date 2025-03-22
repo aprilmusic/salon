@@ -1,13 +1,10 @@
 :root {
-  --background: #ffffff;
+  --background: linear-gradient(#fefbec, #f7e9d4);
   --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --text-primary: #88451d;
+  --text-secondary: #ac602e;
+  --text-tertiary: #cd7e31;
+  --border: #f9e796;
 }
 
 html,
@@ -35,8 +32,15 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+Dialog {
+  border-color: var(--border);
+}
+
+Button {
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+Label {
+  color: var(--text-primary);
 }

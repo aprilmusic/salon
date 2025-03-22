@@ -2,6 +2,8 @@ import Head from "next/head";
 import { Cormorant_Garamond } from "next/font/google";
 import Concert from "@/components/Concert";
 import { Box } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { GetLatestConcertResponse, getLatestConcertResponseSchema } from "./api/concerts/latest";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -9,6 +11,20 @@ const cormorant = Cormorant_Garamond({
 });
 
 export default function Home() {
+  const [concert, setConcert] = useState<GetLatestConcertResponse | null>(null);
+  useEffect(() => {
+    async function fetchLatestConcert() {
+      try {
+        const response = await fetch('/api/concerts/latest');
+        const data = await response.json();
+        setConcert(getLatestConcertResponseSchema.parse(data));
+      } catch (error) {
+        console.error('Error fetching latest concert:', error);
+      }
+    }
+    fetchLatestConcert();
+  }, []);
+
   return (
     <>
       <Head>
@@ -19,12 +35,13 @@ export default function Home() {
       <Box
         as="main"
         minH="100vh"
-        bgGradient="linear-gradient(#fff8e1, #ffe0b2)"
+        bgGradient="var(--background)"
         py={16}
         px={8}
         fontFamily={cormorant.className}
       >
-        <Concert />
+        {concert?.success ? (
+          <Concert concert={concert.result} />) : (<>Boooo you messed up</>)}
       </Box>
     </>
   );
