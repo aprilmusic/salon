@@ -97,7 +97,10 @@ async function handleUpdateConcertById(
         })
         return {
             success: true,
-            result
+            result: {
+                ...result,
+                date: result.date.toISOString()
+            }
         }
 
     } catch (error) {
