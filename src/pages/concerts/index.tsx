@@ -151,7 +151,7 @@ export default function ConcertListPage() {
                             </Dialog.Body>
                             <Dialog.Footer>
                                 <Dialog.ActionTrigger asChild>
-                                    <Button variant="outline">Cancel</Button>
+                                    <Button>Cancel</Button>
                                 </Dialog.ActionTrigger>
                                 <Dialog.ActionTrigger asChild>
                                     <Button onClick={onSubmitCreateConcert}>Save</Button>
@@ -189,7 +189,7 @@ export default function ConcertListPage() {
                                     </Box>
                                 ))}
                             </Box>
-                            <Button alignSelf="flex-end" onClick={(e) => {
+                            <Button alignSelf="flex-end" paddingX={8} onClick={(e) => {
                                 e.stopPropagation();
                                 e.preventDefault();
                                 deleteConcert(concert.id)
