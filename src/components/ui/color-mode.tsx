@@ -46,6 +46,7 @@ export function ColorModeIcon() {
   return colorMode === "dark" ? <LuMoon /> : <LuSun />
 }
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface ColorModeButtonProps extends Omit<IconButtonProps, "aria-label"> { }
 
 export const ColorModeButton = React.forwardRef<
