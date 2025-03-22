@@ -175,18 +175,26 @@ export default function Concert({ concert }: { concert: Concert }) {
 
         if (!over || active.id === over.id) return;
 
+        console.log('Drag end event:', { active, over });
+
         const oldIndex = performances.findIndex((p) => p.id === active.id);
         const newIndex = performances.findIndex((p) => p.id === over.id);
 
+        console.log('Performance indices:', { oldIndex, newIndex });
+
         // Get the surrounding items' order strings
         const prevItem = newIndex > 0 ? performances[newIndex - 1] : null;
-        const nextItem = newIndex < performances.length - 1 ? performances[newIndex] : null;
+        const nextItem = newIndex < performances.length - 1 ? performances[newIndex + 1] : null;
+
+        console.log('Surrounding items:', { prevItem, nextItem });
 
         // Generate a new order string that lexicographically sits between the two items
         const newOrder = generateOrderBetween(
             prevItem?.order || 'a0',
             nextItem?.order || 'z0'
         );
+
+        console.log('Generated new order:', newOrder);
 
         // Update local state with new order
         const newPerformances = [...performances];
@@ -195,8 +203,11 @@ export default function Concert({ concert }: { concert: Concert }) {
         newPerformances.splice(newIndex, 0, movedPerformance);
         setPerformances(newPerformances);
 
+        console.log('Updated local state:', { movedPerformance, newPerformances });
+
         // Update in database
         try {
+            console.log('Sending PATCH request to update performance order');
             const response = await fetch(`/api/performances/${movedPerformance.id}`, {
                 method: 'PATCH',
                 headers: {
@@ -208,11 +219,22 @@ export default function Concert({ concert }: { concert: Concert }) {
                 }),
             });
 
+            console.log('PATCH response status:', response.status);
+            const responseData = await response.json();
+            console.log('PATCH response data:', responseData);
+
             if (!response.ok) {
-                throw new Error('Failed to update performance order');
+                throw new Error(responseData.error?.message || 'Failed to update performance order');
             }
         } catch (error) {
             console.error('Error updating performance order:', error);
+            if (error instanceof Error) {
+                console.error('Error details:', {
+                    name: error.name,
+                    message: error.message,
+                    stack: error.stack
+                });
+            }
             setPerformances(performances);
         }
     };
@@ -282,7 +304,7 @@ export default function Concert({ concert }: { concert: Concert }) {
             <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
                 <SortableContext items={performances.map(p => p.id)} strategy={verticalListSortingStrategy}>
                     <Box display="flex" flexDirection="column" gap={8} paddingBottom={8}>
-                        {(concert.performances ?? []).map((item, index) => (
+                        {performances.map((item, index) => (
                             <Performance
                                 key={index}
                                 id={item.id}

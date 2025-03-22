@@ -11,7 +11,10 @@ export default async function requestHandler(request: NextApiRequest, response: 
         const result = await handleGetPerformanceById(getPerformanceByIdParamsSchema.parse(request.query))
         return response.status(200).json(result)
     } else if (request.method === 'PATCH') {
+        console.log('PATCH /api/performances/[id] - Request query:', request.query);
+        console.log('PATCH /api/performances/[id] - Request body:', request.body);
         const result = await handleUpdatePerformanceById(handleUpdatePerformanceByIdParamsSchema.parse({ ...request.query, ...request.body }))
+        console.log('PATCH /api/performances/[id] - Response:', result);
         return response.status(200).json(result)
     } else {
         response.setHeader('Allow', ['GET', 'PATCH'])
@@ -65,17 +68,25 @@ async function handleUpdatePerformanceById(
     { id, ...data }: HandleUpdatePerformanceByIdParams,
 ): Promise<HandleUpdatePerformanceByIdResponse> {
     try {
+        console.log('Updating performance:', { id, data });
         const result = await prisma.performance.update({
             where: {
                 id
             },
             data,
-
         })
+        console.log('Successfully updated performance:', result);
         return { success: true, result }
 
     } catch (error) {
         console.error('Error updating performance:', error)
+        if (error instanceof Error) {
+            console.error('Error details:', {
+                name: error.name,
+                message: error.message,
+                stack: error.stack
+            });
+        }
         return { success: false, error: { message: `Failed to update performance: ${JSON.stringify(error)}` } }
     } finally {
         await prisma.$disconnect()
