@@ -7,14 +7,25 @@ const playfair = Playfair_Display({
     weight: ["400", "600"],
 });
 
-const handleDeletePerformance = async (id: string) => {
+interface PerformanceProps {
+    title: string;
+    composer: string;
+    performers: string;
+    id: string;
+    concertId: string;
+    passcode: string;
+    isAuthenticated: boolean;
+    onRequestAuth: () => void;
+}
+
+const handleDeletePerformance = async (id: string, concertId: string, passcode: string) => {
     try {
         const response = await fetch('/api/performances', {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ id })
+            body: JSON.stringify({ id, concertId, passcode })
         })
         if (!response.ok) {
             throw new Error('Failed to delete performance')
@@ -25,7 +36,24 @@ const handleDeletePerformance = async (id: string) => {
     }
 }
 
-export default function Performance({ title, composer, performers, id }: { title: string, composer: string, performers: string, id: string }) {
+export default function Performance({ 
+    title, 
+    composer, 
+    performers, 
+    id,
+    concertId,
+    passcode,
+    isAuthenticated,
+    onRequestAuth
+}: PerformanceProps) {
+    const handleDelete = () => {
+        if (!isAuthenticated) {
+            onRequestAuth();
+            return;
+        }
+        handleDeletePerformance(id, concertId, passcode);
+    };
+
     return (
         <Card.Root
             bg="var(--background-secondary)"
@@ -51,7 +79,7 @@ export default function Performance({ title, composer, performers, id }: { title
                 </Text>
             </Card.Body>
             <Card.Footer display="flex" justifyContent="flex-end" p={4}>
-                <Button px={4} onClick={() => handleDeletePerformance(id)}>Delete</Button>
+                <Button px={4} onClick={handleDelete}>Delete</Button>
             </Card.Footer>
         </Card.Root>
     );

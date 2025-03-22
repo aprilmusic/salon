@@ -41,7 +41,11 @@ export async function handleCreatePerformance(data: CreatePerformanceParams): Pr
 }
 
 // delete performance
-const deletePerformanceParamsSchema = z.object({ id: z.string() })
+const deletePerformanceParamsSchema = z.object({ 
+    id: z.string(),
+    concertId: z.string(),
+    passcode: z.string()
+})
 type DeletePerformanceParams = z.infer<typeof deletePerformanceParamsSchema>
 
 export const deletePerformanceResponseSchema = makeResponseSchema(z.object({ success: z.boolean() }))
@@ -49,6 +53,20 @@ export type DeletePerformanceResponse = z.infer<typeof deletePerformanceResponse
 
 export async function handleDeletePerformance(params: DeletePerformanceParams): Promise<DeletePerformanceResponse> {
     try {
+        // First verify the concert exists and check the passcode
+        const concert = await prisma.concert.findUnique({
+            where: { id: params.concertId }
+        });
+
+        if (!concert) {
+            return { success: false, error: { message: 'Concert not found' } };
+        }
+
+        if (concert.passcode !== params.passcode) {
+            return { success: false, error: { message: 'Invalid passcode' } };
+        }
+
+        // If passcode is correct, proceed with deletion
         await prisma.performance.delete({
             where: { id: params.id }
         })
