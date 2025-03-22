@@ -60,8 +60,6 @@ Text {
 }
 
 Button {
-  padding-left: 8;
-  padding-right: 8;
   border-color: var(--border);
   color: var(--text-primary);
 }

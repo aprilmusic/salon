@@ -51,7 +51,7 @@ export default function Performance({ title, composer, performers, id }: { title
                 </Text>
             </Card.Body>
             <Card.Footer display="flex" justifyContent="flex-end" p={4}>
-                <Button onClick={() => handleDeletePerformance(id)}>Delete</Button>
+                <Button px={4} onClick={() => handleDeletePerformance(id)}>Delete</Button>
             </Card.Footer>
         </Card.Root>
     );

@@ -91,7 +91,7 @@ export default function Concert({ concert }: { concert: Concert }) {
 
     return (
         <Container maxW="container.xl" px={8} >
-            <Button p={2} onClick={() => {
+            <Button p={4} onClick={() => {
                 window.location.href = `/concerts`
             }} alignSelf="flex-start" >
                 Back to all concerts
@@ -158,10 +158,10 @@ export default function Concert({ concert }: { concert: Concert }) {
                             </Dialog.Body>
                             <Dialog.Footer>
                                 <Dialog.ActionTrigger asChild>
-                                    <Button>Cancel</Button>
+                                    <Button px={2}>Cancel</Button>
                                 </Dialog.ActionTrigger>
                                 <Dialog.ActionTrigger asChild>
-                                    <Button onClick={onSubmitCreatePerformance}>Save</Button>
+                                    <Button px={2} onClick={onSubmitCreatePerformance}>Save</Button>
                                 </Dialog.ActionTrigger>
                             </Dialog.Footer>
                         </Dialog.Content>

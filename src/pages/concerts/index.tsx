@@ -151,10 +151,10 @@ export default function ConcertListPage() {
                             </Dialog.Body>
                             <Dialog.Footer>
                                 <Dialog.ActionTrigger asChild>
-                                    <Button>Cancel</Button>
+                                    <Button px={2}>Cancel</Button>
                                 </Dialog.ActionTrigger>
                                 <Dialog.ActionTrigger asChild>
-                                    <Button onClick={onSubmitCreateConcert}>Save</Button>
+                                    <Button px={2} onClick={onSubmitCreateConcert}>Save</Button>
                                 </Dialog.ActionTrigger>
                             </Dialog.Footer>
                         </Dialog.Content>
