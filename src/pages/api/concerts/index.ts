@@ -25,6 +25,7 @@ export const getConcertsResponseSchema = makeResponseSchema(z.array(concertSchem
 export type GetConcertsResponse = z.infer<typeof getConcertsResponseSchema>
 
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function handleGetConcerts(_: GetConcertsParams): Promise<GetConcertsResponse> {
     console.log('GET /api/concerts')
     try {

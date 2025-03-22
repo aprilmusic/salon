@@ -9,10 +9,7 @@ import { useState } from 'react';
 import { useForm } from "react-hook-form"
 import { createConcertResponseSchema } from "@/pages/api/concerts";
 import type { Concert } from "@/lib/types";
-interface ConcertFormValues {
-    dateString: string
-    passcode: string
-}
+
 
 interface PerformanceFormValues {
     title: string
@@ -26,12 +23,6 @@ const playfair = Playfair_Display({
 });
 
 export default function Concert({ concert }: { concert: Concert }) {
-
-    const {
-        register: registerConcertForm,
-        handleSubmit: handleSubmitConcertForm,
-        formState: { errors: errorsConcertForm },
-    } = useForm<ConcertFormValues>()
 
     const {
         register: registerPerformanceForm,
@@ -81,9 +72,6 @@ export default function Concert({ concert }: { concert: Concert }) {
         }
     }
 
-    const onSubmitCreateConcert = handleSubmitConcertForm((data) => {
-        createConcert(data)
-    })
 
     const createPerformance = async ({ title, composer, performers }: {
         title: string;

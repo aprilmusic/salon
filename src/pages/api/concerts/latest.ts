@@ -23,6 +23,7 @@ export const getLatestConcertResponseSchema = makeResponseSchema(concertSchema)
 export type GetLatestConcertResponse = z.infer<typeof getLatestConcertResponseSchema>
 
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function handleGetLatestConcert(_: GetLatestConcertParams): Promise<GetLatestConcertResponse> {
     console.log('GET /api/concerts')
     try {
