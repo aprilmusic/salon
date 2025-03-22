@@ -44,6 +44,7 @@ Input {
 Dialog {
   border-color: var(--border);
   background: var(--background-secondary);
+  color: black;
 }
 
 Dialog.Title {
