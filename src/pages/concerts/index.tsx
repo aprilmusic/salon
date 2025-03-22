@@ -51,6 +51,7 @@ export default function ConcertListPage() {
                 body: JSON.stringify({
                     date: new Date(dateString),
                     passcode,
+                    performances: [],
                 }),
             });
             const data = await response.json();
