@@ -32,6 +32,7 @@ export const ItemCard = React.forwardRef<HTMLDivElement, ItemCardProps>(
         marginBottom="var(--item-margin-bottom)"
         borderBottom="var(--border-style)"
         transition="all 0.2s ease"
+        backgroundColor="transparent"
         _hover={{ 
           cursor: onClick ? "pointer" : (isDraggable && !isFrozen ? "grab" : "default"),
           backgroundColor: "var(--hover-bg)",

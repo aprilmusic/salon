@@ -408,7 +408,7 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                         <Dialog.Backdrop />
                         <Dialog.Positioner>
                             <Dialog.Content p={4}
-                                bg="var(--content-background)"
+                                backgroundColor="var(--content-background)"
                                 borderColor="var(--border)"
                                 boxShadow="md">
                                 <Dialog.Header>
@@ -476,7 +476,8 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                     <Dialog.Backdrop />
                     <Dialog.Positioner>
                         <Dialog.Content p={4}
-                            bg="var(--content-background)"
+                            backgroundColor="transparent"
+                            backgroundImage="url('/paper.jpg')"
                             borderColor="var(--border)"
                             boxShadow="md">
                             <Dialog.Header>

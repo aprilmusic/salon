@@ -1,8 +1,8 @@
 :root {
   --background: #000000; /* Black background */
-  --content-background: #f5f5f0; /* Off-white for content area */
+  --content-background: #F9F0E5; /* Warm beige for content area */
   --background-secondary: var(--chakra-colors-color-palette-solid);
-  --foreground: #f5f5f0;
+  --foreground: #F9F0E5;
   --text-primary: #333333;
   --text-secondary: #555555;
   --text-tertiary: #777777;
@@ -126,6 +126,7 @@ Label {
 /* Content container styling */
 .content-container {
   background-color: var(--content-background);
+  background-image: url('/paper.jpg');
   max-width: 800px;
   width: 50%;
   margin: 2rem auto;

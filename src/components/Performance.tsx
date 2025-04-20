@@ -190,7 +190,8 @@ export default function Performance({
                     <Dialog.Positioner>
                         <Dialog.Content
                             p={4}
-                            bg="var(--content-background)"
+                            backgroundColor="transparent"
+                            backgroundImage="url('/paper.jpg')"
                             borderColor="var(--border)"
                             boxShadow="md"
                         >

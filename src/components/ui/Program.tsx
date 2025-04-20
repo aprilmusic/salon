@@ -70,7 +70,7 @@ export const Program = React.forwardRef<HTMLDivElement, ProgramProps>(
 
         {/* Items list */}
         <Box 
-          bg="var(--content-background)"
+          backgroundColor="transparent"
           p={4}
           mb={8}
           className={playfair.className}
