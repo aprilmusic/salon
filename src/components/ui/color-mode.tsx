@@ -2,10 +2,10 @@
 
 import type { IconButtonProps } from "@chakra-ui/react"
 import { ClientOnly, IconButton, Skeleton } from "@chakra-ui/react"
-import { ThemeProvider, useTheme } from "next-themes"
+import { ThemeProvider } from "next-themes"
 import type { ThemeProviderProps } from "next-themes"
 import * as React from "react"
-import { LuMoon, LuSun } from "react-icons/lu"
+import { LuMoon } from "react-icons/lu"
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export interface ColorModeProviderProps extends ThemeProviderProps { }
@@ -31,12 +31,11 @@ export interface UseColorModeReturn {
 }
 
 export function useColorMode(): UseColorModeReturn {
-  const { resolvedTheme, setTheme } = useTheme()
   const toggleColorMode = () => {
     // We're not changing the actual color mode anymore as we want a consistent black background
     // But keeping this function for compatibility
     console.log("Color mode toggling is disabled in this theme");
-  }
+}
   return {
     colorMode: "dark", // Always return dark for our black background theme
     setColorMode: () => console.log("Color mode changing is disabled in this theme"),

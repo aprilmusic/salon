@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { GetConcertsResponse, getConcertsResponseSchema, createConcertResponseSchema } from "../api/concerts/index";
 import {
     Box, Button, Container, Heading, Text,
-    Dialog, Field, Input, Portal, Stack, Card
+    Dialog, Field, Input, Portal, Stack
 
 } from "@chakra-ui/react";
 import { useAdmin } from "@/lib/hooks/useAdmin";
