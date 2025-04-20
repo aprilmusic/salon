@@ -84,6 +84,7 @@ async function handleGetConcertById(
 
 const handleUpdateConcertByIdParamsSchema = z.object({
     id: z.string(),
+    name: z.string().optional(),
     date: z.string().optional(),
     passcode: z.string().optional(),
     frozen: z.boolean().optional()

@@ -3,14 +3,15 @@ generator client {
 }
 
 datasource db {
-  // provider = "sqlite"
-  // url      = "file:./dev.db"
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider = "sqlite"
+  url      = "file:./dev.db"
+  //provider = "postgresql"
+  //url      = env("DATABASE_URL")
 }
 
 model Concert {
   id          String       @id @default(cuid())
+  name        String       @default("Salon")
   date        DateTime
   passcode    String
   frozen      Boolean      @default(false)

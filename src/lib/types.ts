@@ -12,6 +12,7 @@ export type Performance = z.infer<typeof performanceSchema>
 
 export const concertSchema = z.object({
     id: z.string(),
+    name: z.string().optional().default("Concert"),
     date: z.string(),
     passcode: z.string(),
     frozen: z.boolean().default(false),

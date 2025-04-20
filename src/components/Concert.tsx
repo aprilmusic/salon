@@ -6,11 +6,11 @@ import {
 } from "@chakra-ui/react";
 import { useState } from 'react';
 import { useForm } from "react-hook-form"
-import type { Concert } from "@/lib/types";
+import type { Concert as ConcertType } from "@/lib/types";
 import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useAdmin } from "@/lib/hooks/useAdmin";
-import { PageHeading } from "./ui/page-heading";
+import { Program } from "./ui/Program";
 
 interface PerformanceFormValues {
     title: string
@@ -20,6 +20,7 @@ interface PerformanceFormValues {
 }
 
 interface EditConcertFormValues {
+    name: string;
     date: string;
     passcode: string;
     frozen: boolean;
@@ -86,7 +87,7 @@ function generateOrderBetween(before: string, after: string): string {
     return result;
 }
 
-export default function Concert({ concert }: { concert: Concert }) {
+export default function Concert({ concert }: { concert: ConcertType }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [performances, setPerformances] = useState(concert.performances);
     const [error, setError] = useState<string | null>(null);
@@ -270,6 +271,7 @@ export default function Concert({ concert }: { concert: Concert }) {
             console.log('Submitting edit form with data:', data);
 
             const requestBody = {
+                name: data.name,
                 date: new Date(data.date).toISOString(),
                 passcode: data.passcode,
                 frozen: data.frozen,
@@ -313,41 +315,34 @@ export default function Concert({ concert }: { concert: Concert }) {
     }
 
     return (
-        <Container maxW="container.xl" px={3} >
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={8} mt={4}>
-                <Button p={4} onClick={() => {
-                    window.location.href = `/concerts`
-                }} alignSelf="flex-start" >
-                    All concerts
-                </Button>
-                {isAdmin && (
-                    <Button p={4} onClick={() => setIsEditDialogOpen(true)}>
-                        Edit Concert
-                    </Button>
-                )}
-            </Box>
-            <Box textAlign="center" mb={8}>
-                <PageHeading>
-                    Salon
-                </PageHeading>
-                <Text 
-                    color="var(--text-secondary)" 
-                    fontSize="1.2rem"
-                    mt={2}
-                    className={playfair.className}
-                >
-                    {new Date(concert.date).toLocaleDateString()}
-                </Text>
-            </Box>
-
-            <Box 
-                bg="var(--content-background)"
-                p={4}
-                mb={8}
-                className={playfair.className}
+        <>
+            <Program
+                title={concert.name ?? 'Salon'}
+                leftButton={{
+                    label: "All concerts",
+                    onClick: () => {
+                        window.location.href = `/concerts`;
+                    }
+                }}
+                rightButton={isAdmin ? {
+                    label: "Edit Concert",
+                    onClick: () => setIsEditDialogOpen(true)
+                } : undefined}
             >
-                <DndContext collisionDetection={closestCenter} onDragEnd={!isFrozen ? handleDragEnd : undefined}>
-                    <SortableContext items={performances.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                <Box className={playfair.className}>
+                    <Text 
+                        color="var(--text-secondary)" 
+                        fontSize="1.2rem"
+                        mt={-6}
+                        mb={6}
+                        textAlign="center"
+                        className={playfair.className}
+                    >
+                        {new Date(concert.date).toLocaleDateString()}
+                    </Text>
+                    
+                    {/* Wrap the items with DnD context if not frozen */}
+                    {isFrozen ? (
                         <Box display="flex" flexDirection="column">
                             {performances.map((item) => (
                                 <Performance
@@ -362,19 +357,51 @@ export default function Concert({ concert }: { concert: Concert }) {
                                 />
                             ))}
                         </Box>
-                    </SortableContext>
-                </DndContext>
-            </Box>
+                    ) : (
+                        <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+                            <SortableContext items={performances.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                                <Box display="flex" flexDirection="column">
+                                    {performances.map((item) => (
+                                        <Performance
+                                            key={item.id}
+                                            id={item.id}
+                                            title={item.title}
+                                            composer={item.composer}
+                                            performers={item.performers}
+                                            concertId={concert.id}
+                                            passcode={concert.passcode}
+                                            isFrozen={isFrozen}
+                                        />
+                                    ))}
+                                </Box>
+                            </SortableContext>
+                        </DndContext>
+                    )}
+
+                    {/* Add Performance Button */}
+                    {!isFrozen && (
+                        <Box mt={4}>
+                            <Button
+                                p={4}
+                                marginBottom={4}
+                                onClick={() => document.getElementById('add-performance-dialog-trigger')?.click()}
+                            >
+                                + New performance
+                            </Button>
+                        </Box>
+                    )}
+                </Box>
+            </Program>
 
             {/* Add Performance Dialog */}
             {!isFrozen && (
                 <Dialog.Root>
                     <Dialog.Trigger asChild>
                         <Button
-                            p={4}
-                            marginBottom={4}
+                            id="add-performance-dialog-trigger"
+                            display="none"
                         >
-                            + New performance
+                            Hidden Trigger
                         </Button>
                     </Dialog.Trigger>
                     <Portal>
@@ -458,6 +485,17 @@ export default function Concert({ concert }: { concert: Concert }) {
                             <Dialog.Body pb="4" className={playfair.className}>
                                 <form onSubmit={onSubmitEdit}>
                                     <Stack gap="4" align="flex-start" maxW="sm">
+                                        <Field.Root invalid={!!errorsEditForm.name}>
+                                            <Field.Label>Name</Field.Label>
+                                            <Input
+                                                paddingLeft={1}
+                                                color="var(--text-primary)"
+                                                {...registerEditForm("name", {
+                                                    required: "Name is required",
+                                                    value: concert.name
+                                                })}
+                                            />
+                                        </Field.Root>
                                         <Field.Root invalid={!!errorsEditForm.date}>
                                             <Field.Label>Date</Field.Label>
                                             <Input
@@ -522,6 +560,6 @@ export default function Concert({ concert }: { concert: Concert }) {
                     </Dialog.Positioner>
                 </Portal>
             </Dialog.Root>
-        </Container >
+        </>
     );
 }
