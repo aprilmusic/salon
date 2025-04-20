@@ -1,20 +1,17 @@
 "use client"
 
-import { Alex_Brush, Playfair_Display } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form"
 import { GetConcertsResponse, getConcertsResponseSchema, createConcertResponseSchema } from "../api/concerts/index";
 import {
-    Box, Button, Container, Heading, Text,
+    Box, Button, Container, Text,
     Dialog, Field, Input, Portal, Stack
-
 } from "@chakra-ui/react";
 import { useAdmin } from "@/lib/hooks/useAdmin";
-
-const alexBrush = Alex_Brush({
-    subsets: ["latin"],
-    weight: ["400"],
-});
+import { PageHeading } from "@/components/ui/page-heading";
+import { DeleteButton } from "@/components/ui/delete-button";
+import { ItemCard } from "@/components/ui/item-card";
 
 const playfair = Playfair_Display({
     subsets: ["latin"],
@@ -136,18 +133,10 @@ export default function ConcertListPage() {
             bg="var(--background)"
         >
             <div className="content-container">
-                <Container maxW="container.xl" p={8}>
-                    <Heading
-                        as="h1"
-                        size="2xl"
-                        textAlign="center"
-                        mb={12}
-                        color="var(--text-primary)"
-                        className={alexBrush.className}
-                        fontWeight="semibold"
-                    >
+                <Container maxW="container.xl" p={4} pt={8}>
+                    <PageHeading>
                         All concerts
-                    </Heading>
+                    </PageHeading>
                     {isLoading && ("Loading...")}
                     {error && (
                         <Text color="red.500" fontSize="xl" textAlign="center" className={playfair.className}>
@@ -168,7 +157,7 @@ export default function ConcertListPage() {
                                         borderColor="var(--border)"
                                         boxShadow="md">
                                         <Dialog.Header>
-                                            <Dialog.Title color="var(--text-primary)" className={alexBrush.className}>Add a new concert</Dialog.Title>
+                                            <Dialog.Title color="var(--text-primary)" className={playfair.className}>Create a new concert</Dialog.Title>
                                         </Dialog.Header>
                                         <Dialog.Body pb="4" className={playfair.className}>
                                             <form onSubmit={onSubmitCreateConcert}>
@@ -208,7 +197,7 @@ export default function ConcertListPage() {
                                     borderColor="var(--border)"
                                     boxShadow="md">
                                     <Dialog.Header>
-                                        <Dialog.Title color="var(--text-primary)" className={alexBrush.className}>Wait! Are you sure?</Dialog.Title>
+                                        <Dialog.Title color="var(--text-primary)" className={playfair.className}>Wait! Are you sure?</Dialog.Title>
                                     </Dialog.Header>
                                     <Dialog.Body pb="4" className={playfair.className}>
                                         <form onSubmit={onSubmitDelete}>
@@ -240,19 +229,12 @@ export default function ConcertListPage() {
 
                     <Box display="flex" flexDirection="column" gap={6}>
                         {concerts && concerts.success ? concerts.result.map((concert, index) => (
-                            <Box
+                            <ItemCard
                                 key={concert.id}
-                                bg="var(--content-background)"
-                                border="none"
-                                padding="20px"
-                                marginBottom="10px"
-                                borderBottom="1px dotted var(--text-secondary)"
-                                transition="all 0.2s ease"
-                                _hover={{ backgroundColor: "rgba(0,0,0,0.03)" }}
-                                onClick={() => window.location.href = index === 0 ? '/' : `/concerts/${concert.id}`}
-                                cursor="pointer"
-                                className={playfair.className}
-                                position="relative"
+                                onClick={() => {
+                                    const url = index === 0 ? '/' : `/concerts/${concert.id}`;
+                                    window.location.href = url;
+                                }}
                             >
                                 <Box 
                                     display="flex" 
@@ -262,7 +244,7 @@ export default function ConcertListPage() {
                                     width="100%"
                                 >
                                     <Text
-                                        fontSize="1.6rem"
+                                        fontSize="var(--perf-title-size)"
                                         fontWeight="600"
                                         color="var(--text-primary)"
                                         className={playfair.className}
@@ -279,19 +261,21 @@ export default function ConcertListPage() {
                                         <Text 
                                             as="span" 
                                             color="var(--text-secondary)" 
-                                            fontSize="1.4rem"
+                                            fontSize="var(--perf-composer-size)"
                                             mx={2}
                                             flexGrow={1}
                                             overflow="hidden"
                                             style={{
+                                                width: "100%",
                                                 textOverflow: "clip",
-                                                whiteSpace: "nowrap"
+                                                whiteSpace: "nowrap",
+                                                letterSpacing: "0.5em"
                                             }}
                                         >
-                                            {".".repeat(100)}
+                                            {".".repeat(500)}
                                         </Text>
                                         <Text
-                                            fontSize="1.4rem"
+                                            fontSize="var(--perf-composer-size)"
                                             fontWeight="600"
                                             color="var(--text-primary)"
                                             textAlign="right"
@@ -314,7 +298,7 @@ export default function ConcertListPage() {
                                                 <Box key={performance.id} ml={4}>
                                                     <Text 
                                                         color="var(--text-secondary)" 
-                                                        fontSize="1.1rem"
+                                                        fontSize="var(--perf-performers-size)"
                                                         fontStyle="italic" 
                                                     >
                                                         {performance.title}
@@ -325,22 +309,16 @@ export default function ConcertListPage() {
                                     </Box>
                                     
                                     {isAdmin && (
-                                        <Button 
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                e.preventDefault();
+                                        <DeleteButton 
+                                            onDelete={() => {
                                                 setConcertToDelete(concert.id);
                                             }}
                                             alignSelf="flex-start"
                                             mt={2}
-                                        >
-                                            Delete
-                                        </Button>
+                                        />
                                     )}
                                 </Box>
-                            </Box>
+                            </ItemCard>
                         )) : (
                             <Text color="var(--text-primary)" fontSize="xl" textAlign="center">
                                 No concerts available at the moment.

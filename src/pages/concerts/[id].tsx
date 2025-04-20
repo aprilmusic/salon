@@ -1,14 +1,14 @@
 import { Box } from "@chakra-ui/react";
-import { Cormorant_Garamond } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import Concert from "@/components/Concert";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { GetConcertByIdResponse, getConcertByIdResponseSchema } from "../api/concerts/[id]";
 import { Spinner } from "@chakra-ui/react"
 
-const cormorant = Cormorant_Garamond({
+const playfair = Playfair_Display({
     subsets: ["latin"],
-    weight: ["300", "400", "600"],
+    weight: ["400", "600"],
 });
 
 export default function ConcertPage() {
@@ -35,10 +35,10 @@ export default function ConcertPage() {
             as="main"
             minH="100vh"
             bg="var(--background)"
-            fontFamily={cormorant.className}
+            className={playfair.className}
         >
             <div className="content-container">
-                <Box py={16} px={8}>
+                <Box py={4} px={3}>
                     {concert?.success ? (
                         <Concert concert={concert.result} />
                     ) : (

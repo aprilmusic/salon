@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Alex_Brush, Playfair_Display } from "next/font/google";
+import { Great_Vibes, Playfair_Display } from "next/font/google";
 import Concert from "@/components/Concert";
 import { Box } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -7,8 +7,7 @@ import { GetLatestConcertResponse, getLatestConcertResponseSchema } from "./api/
 import { Spinner } from "@chakra-ui/react"
 import { useAdmin } from "@/lib/hooks/useAdmin";
 
-
-const alexBrush = Alex_Brush({
+const greatVibes = Great_Vibes({
   subsets: ["latin"],
   weight: ["400"],
 });
@@ -49,9 +48,9 @@ export default function Home() {
         className={playfair.className}
       >
         <div className="content-container">
-          <Box py={16} px={8}>
+          <Box py={4} px={3} pt={8}>
             {isAdmin && (
-              <div className={`text-4xl mb-4 text-center ${alexBrush.className}`}>🎵</div>
+              <div className={`text-4xl mb-2 text-center ${greatVibes.className}`}>🎵</div>
             )}
             {concert?.success ? (
               <Concert concert={concert.result} />) : (<Spinner />)}

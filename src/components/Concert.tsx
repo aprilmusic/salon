@@ -1,7 +1,7 @@
 import Performance from "./Performance";
-import { Alex_Brush, Playfair_Display } from "next/font/google";
+import { Playfair_Display } from "next/font/google";
 import {
-    Box, Button, Container, Heading, Text,
+    Box, Button, Container, Text,
     Dialog, Field, Input, Portal, Stack,
 } from "@chakra-ui/react";
 import { useState } from 'react';
@@ -10,6 +10,7 @@ import type { Concert } from "@/lib/types";
 import { DndContext, DragEndEvent, closestCenter } from "@dnd-kit/core";
 import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import { useAdmin } from "@/lib/hooks/useAdmin";
+import { PageHeading } from "./ui/page-heading";
 
 interface PerformanceFormValues {
     title: string
@@ -23,11 +24,6 @@ interface EditConcertFormValues {
     passcode: string;
     frozen: boolean;
 }
-
-const alexBrush = Alex_Brush({
-    subsets: ["latin"],
-    weight: ["400"],
-});
 
 const playfair = Playfair_Display({
     subsets: ["latin"],
@@ -317,8 +313,8 @@ export default function Concert({ concert }: { concert: Concert }) {
     }
 
     return (
-        <Container maxW="container.xl" px={8} >
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+        <Container maxW="container.xl" px={3} >
+            <Box display="flex" justifyContent="space-between" alignItems="center" mb={8} mt={4}>
                 <Button p={4} onClick={() => {
                     window.location.href = `/concerts`
                 }} alignSelf="flex-start" >
@@ -330,21 +326,23 @@ export default function Concert({ concert }: { concert: Concert }) {
                     </Button>
                 )}
             </Box>
-            <Heading
-                as="h1"
-                size="2xl"
-                textAlign="center"
-                mb={12}
-                color="var(--text-primary)"
-                className={alexBrush.className}
-                fontWeight="semibold"
-            >
-                Salon ({new Date(concert.date).toLocaleDateString()})
-            </Heading>
+            <Box textAlign="center" mb={8}>
+                <PageHeading>
+                    Salon
+                </PageHeading>
+                <Text 
+                    color="var(--text-secondary)" 
+                    fontSize="1.2rem"
+                    mt={2}
+                    className={playfair.className}
+                >
+                    {new Date(concert.date).toLocaleDateString()}
+                </Text>
+            </Box>
 
             <Box 
                 bg="var(--content-background)"
-                p={8}
+                p={4}
                 mb={8}
                 className={playfair.className}
             >
@@ -387,7 +385,7 @@ export default function Concert({ concert }: { concert: Concert }) {
                                 borderColor="var(--border)"
                                 boxShadow="md">
                                 <Dialog.Header>
-                                    <Dialog.Title color="var(--text-primary)" className={alexBrush.className}>Add a performance</Dialog.Title>
+                                    <Dialog.Title color="var(--text-primary)" className={playfair.className}>Add a performance</Dialog.Title>
                                 </Dialog.Header>
                                 <Dialog.Body pb="4" className={playfair.className}>
                                     <form onSubmit={onSubmitCreatePerformance}>
@@ -455,7 +453,7 @@ export default function Concert({ concert }: { concert: Concert }) {
                             borderColor="var(--border)"
                             boxShadow="md">
                             <Dialog.Header>
-                                <Dialog.Title color="var(--text-primary)" className={alexBrush.className}>Edit Concert</Dialog.Title>
+                                <Dialog.Title color="var(--text-primary)" className={playfair.className}>Edit Concert</Dialog.Title>
                             </Dialog.Header>
                             <Dialog.Body pb="4" className={playfair.className}>
                                 <form onSubmit={onSubmitEdit}>

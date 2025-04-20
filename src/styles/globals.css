@@ -7,8 +7,35 @@
   --text-secondary: #555555;
   --text-tertiary: #777777;
   --border: #cccccc;
-  --heading-font: 'Alex Brush', cursive;
+  --heading-font: 'Great Vibes', cursive;
   --body-font: 'Playfair Display', serif;
+  
+  /* Font sizes for performance components */
+  --perf-title-size: clamp(1rem, 1.6vw, 1.4rem);
+  --perf-composer-size: clamp(0.9rem, 1.4vw, 1.4rem);
+  --perf-performers-size: clamp(0.8rem, 1.1vw, 1.1rem);
+  
+  /* Header sizes */
+  --heading-size-xl: clamp(2.8rem, 5vw, 3.5rem);
+  --heading-size-lg: clamp(2.2rem, 4vw, 2.8rem);
+  --heading-size-md: clamp(1.8rem, 3vw, 2.2rem);
+  
+  /* Button hover styles */
+  --button-hover-bg: rgba(0,0,0,0.05);
+  --button-hover-color: var(--text-primary);
+  
+  /* Standardized spacing */
+  --container-padding: 0.5rem;
+  --item-padding-v: 12px;
+  --item-padding-h: 16px;
+  --item-margin-bottom: 10px;
+  --component-spacing: 4px;
+  
+  /* Standardized hover effect */
+  --hover-bg: rgba(0,0,0,0.03);
+  
+  /* Standard border style */
+  --border-style: 1px dotted var(--text-secondary);
 }
 
 html,
@@ -76,6 +103,17 @@ Button {
   color: var(--text-primary);
 }
 
+/* Common button hover styles */
+Button:hover {
+  background-color: var(--button-hover-bg) !important;
+  color: var(--button-hover-color) !important;
+}
+
+Button.ghost:hover {
+  background-color: var(--button-hover-bg) !important;
+  color: var(--button-hover-color) !important;
+}
+
 Label {
   color: var(--text-primary);
 }
@@ -88,14 +126,24 @@ Label {
 /* Content container styling */
 .content-container {
   background-color: var(--content-background);
-  max-width: 1200px;
-  width: 90%;
+  max-width: 800px;
+  width: 50%;
   margin: 2rem auto;
   min-height: calc(100vh - 4rem);
   border-radius: 4px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   position: relative;
+  padding: 0.5rem; /* Reduced padding for tighter layout */
+}
+
+/* Media query for mobile devices */
+@media (max-width: 768px) {
+  .content-container {
+    width: 90%;
+    margin: 1rem auto;
+    padding: 0.25rem; /* Even smaller padding on mobile */
+  }
 }
 
 /* Font utility classes */

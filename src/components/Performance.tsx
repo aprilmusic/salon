@@ -1,11 +1,13 @@
 import { Button, Field, Input, Portal, Box } from "@chakra-ui/react";
 import { Text, Dialog } from "@chakra-ui/react";
-import { Alex_Brush, Playfair_Display } from "next/font/google";
+import { Great_Vibes, Playfair_Display } from "next/font/google";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
+import { DeleteButton } from "./ui/delete-button";
+import { ItemCard } from "./ui/item-card";
 
-const alexBrush = Alex_Brush({
+const greatVibes = Great_Vibes({
     subsets: ["latin"],
     weight: ["400"],
 });
@@ -97,32 +99,25 @@ export default function Performance({
 
     return (
         <>
-            <Box 
-                position="relative" 
-                width="100%" 
+            <ItemCard
                 ref={setNodeRef}
                 style={style}
                 {...(!isFrozen ? { ...attributes, ...listeners } : {})}
-                padding="20px 0"
-                borderBottom="1px dotted var(--text-secondary)"
-                _hover={{ 
-                    cursor: isFrozen ? 'default' : 'grab',
-                    backgroundColor: "rgba(0,0,0,0.03)",
-                }}
-                _active={{ cursor: isFrozen ? 'default' : 'grabbing' }}
-                transition="all 0.2s ease"
+                isDraggable={true}
+                isFrozen={isFrozen}
                 title={isFrozen ? "This concert is frozen. Performances cannot be reordered." : ""}
+                padding={`var(--item-padding-v) 0`}
             >
                 <Box 
                     display="flex" 
                     justifyContent="space-between" 
                     alignItems="baseline"
                     className={playfair.className}
-                    mb={2}
+                    mb={1}
                     width="100%"
                 >
                     <Text 
-                        fontSize="1.4rem" 
+                        fontSize="var(--perf-title-size)"
                         fontWeight="600"
                         color="var(--text-primary)"
                         fontStyle="italic"
@@ -139,19 +134,21 @@ export default function Performance({
                         <Text 
                             as="span" 
                             color="var(--text-secondary)" 
-                            fontSize="1.4rem"
+                            fontSize="var(--perf-composer-size)"
                             mx={2}
                             flexGrow={1}
                             overflow="hidden"
                             style={{
+                                width: "100%",
                                 textOverflow: "clip",
-                                whiteSpace: "nowrap"
+                                whiteSpace: "nowrap",
+                                letterSpacing: "0.5em"
                             }}
                         >
-                            {".".repeat(100)}
+                            {".".repeat(500)}
                         </Text>
                         <Text 
-                            fontSize="1.4rem" 
+                            fontSize="var(--perf-composer-size)"
                             fontWeight="600"
                             color="var(--text-primary)"
                             textAlign="right"
@@ -164,27 +161,24 @@ export default function Performance({
                 <Box display="flex" justifyContent="space-between" alignItems="flex-start">
                     <Text 
                         color="var(--text-tertiary)" 
-                        fontSize="1.1rem" 
+                        fontSize="var(--perf-performers-size)"
                         className={playfair.className}
                         ml={4}
+                        maxWidth="80%"
                     >
                         {performers}
                     </Text>
 
                     {/* Delete button - only enabled if not frozen */}
                     {!isFrozen && (
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={handleOpenDeleteDialog}
-                            ml={4}
-                            mt={-2}
+                        <DeleteButton
+                            onDelete={handleOpenDeleteDialog}
                         >
                             Delete
-                        </Button>
+                        </DeleteButton>
                     )}
                 </Box>
-            </Box>
+            </ItemCard>
 
             {/* Delete Dialog */}
             <Dialog.Root
@@ -201,7 +195,7 @@ export default function Performance({
                             boxShadow="md"
                         >
                             <Dialog.Header>
-                                <Dialog.Title color="var(--text-primary)" className={alexBrush.className}>Delete Performance</Dialog.Title>
+                                <Dialog.Title color="var(--text-primary)" className={greatVibes.className}>Delete Performance</Dialog.Title>
                             </Dialog.Header>
                             <Dialog.Body pb="4" className={playfair.className}>
                                 <Text mb={4}>Are you sure you want to delete this performance?</Text>
