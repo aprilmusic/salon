@@ -1,6 +1,6 @@
 "use client"
 
-import { Playfair_Display } from "next/font/google";
+import { Alex_Brush, Playfair_Display } from "next/font/google";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form"
 import { GetConcertsResponse, getConcertsResponseSchema, createConcertResponseSchema } from "../api/concerts/index";
@@ -10,6 +10,11 @@ import {
 
 } from "@chakra-ui/react";
 import { useAdmin } from "@/lib/hooks/useAdmin";
+
+const alexBrush = Alex_Brush({
+    subsets: ["latin"],
+    weight: ["400"],
+});
 
 const playfair = Playfair_Display({
     subsets: ["latin"],
@@ -138,14 +143,14 @@ export default function ConcertListPage() {
                         textAlign="center"
                         mb={12}
                         color="var(--text-primary)"
-                        fontFamily={playfair.className}
+                        className={alexBrush.className}
                         fontWeight="semibold"
                     >
                         All concerts
                     </Heading>
                     {isLoading && ("Loading...")}
                     {error && (
-                        <Text color="red.500" fontSize="xl" textAlign="center">
+                        <Text color="red.500" fontSize="xl" textAlign="center" className={playfair.className}>
                             {error}
                         </Text>
                     )}
@@ -163,9 +168,9 @@ export default function ConcertListPage() {
                                         borderColor="var(--border)"
                                         boxShadow="md">
                                         <Dialog.Header>
-                                            <Dialog.Title color="var(--text-primary)" >Add a new concert</Dialog.Title>
+                                            <Dialog.Title color="var(--text-primary)" className={alexBrush.className}>Add a new concert</Dialog.Title>
                                         </Dialog.Header>
-                                        <Dialog.Body pb="4">
+                                        <Dialog.Body pb="4" className={playfair.className}>
                                             <form onSubmit={onSubmitCreateConcert}>
                                                 <Stack gap="4" align="flex-start" maxW="sm">
                                                     <Field.Root>
@@ -203,9 +208,9 @@ export default function ConcertListPage() {
                                     borderColor="var(--border)"
                                     boxShadow="md">
                                     <Dialog.Header>
-                                        <Dialog.Title color="var(--text-primary)">Wait! Are you sure?</Dialog.Title>
+                                        <Dialog.Title color="var(--text-primary)" className={alexBrush.className}>Wait! Are you sure?</Dialog.Title>
                                     </Dialog.Header>
-                                    <Dialog.Body pb="4">
+                                    <Dialog.Body pb="4" className={playfair.className}>
                                         <form onSubmit={onSubmitDelete}>
                                             <Stack gap="4" align="flex-start" maxW="sm">
                                                 <Field.Root invalid={!!errorsDeleteForm.passcode}>
@@ -233,57 +238,114 @@ export default function ConcertListPage() {
                         </Portal>
                     </Dialog.Root>
 
-                    <Box display="flex" flexDirection="column" gap={8}>
+                    <Box display="flex" flexDirection="column" gap={6}>
                         {concerts && concerts.success ? concerts.result.map((concert, index) => (
-                            <Card.Root
+                            <Box
                                 key={concert.id}
                                 bg="var(--content-background)"
-                                borderColor="var(--border)"
-                                boxShadow="sm"
-                                _hover={{ boxShadow: "md", transform: "translateY(-2px)" }}
+                                border="none"
+                                padding="20px"
+                                marginBottom="10px"
+                                borderBottom="1px dotted var(--text-secondary)"
                                 transition="all 0.2s ease"
+                                _hover={{ backgroundColor: "rgba(0,0,0,0.03)" }}
+                                onClick={() => window.location.href = index === 0 ? '/' : `/concerts/${concert.id}`}
+                                cursor="pointer"
+                                className={playfair.className}
+                                position="relative"
                             >
-                                <Card.Body p={4} fontFamily={playfair.className} onClick={() => window.location.href = index === 0 ? '/' : `/concerts/${concert.id}`}>
-                                    <Heading
-                                        as="h2"
-                                        size="lg"
-                                        fontSize="1.5rem"
+                                <Box 
+                                    display="flex" 
+                                    justifyContent="space-between" 
+                                    alignItems="baseline"
+                                    mb={4}
+                                    width="100%"
+                                >
+                                    <Text
+                                        fontSize="1.6rem"
+                                        fontWeight="600"
                                         color="var(--text-primary)"
-                                        mb={4}
-                                        fontFamily={playfair.className}
+                                        className={playfair.className}
+                                        maxWidth="30%"
                                     >
-                                        {new Date(concert.date).toLocaleDateString()}
-                                    </Heading>
-                                    {isAdmin && (
-                                        <Text color="var(--text-tertiary)" fontSize="sm" mb={4}>
-                                            Passcode: {concert.passcode}
+                                        Salon
+                                    </Text>
+                                    <Box 
+                                        display="flex" 
+                                        alignItems="baseline"
+                                        flex="1"
+                                        minWidth="0"
+                                    >
+                                        <Text 
+                                            as="span" 
+                                            color="var(--text-secondary)" 
+                                            fontSize="1.4rem"
+                                            mx={2}
+                                            flexGrow={1}
+                                            overflow="hidden"
+                                            style={{
+                                                textOverflow: "clip",
+                                                whiteSpace: "nowrap"
+                                            }}
+                                        >
+                                            {".".repeat(100)}
                                         </Text>
-                                    )}
-                                    <Box display="flex" flexDirection="column" gap={4}>
-                                        {concert.performances.map((performance) => (
-                                            <Box key={performance.id}>
-                                                <Text color="var(--text-secondary)" fontSize="md" mb={2}>
-                                                    {performance.title}
-                                                </Text>
-                                            </Box>
-                                        ))}
+                                        <Text
+                                            fontSize="1.4rem"
+                                            fontWeight="600"
+                                            color="var(--text-primary)"
+                                            textAlign="right"
+                                        >
+                                            {new Date(concert.date).toLocaleDateString()}
+                                        </Text>
                                     </Box>
+                                </Box>
+                                
+                                <Box display="flex" justifyContent="space-between">
+                                    <Box>
+                                        {isAdmin && (
+                                            <Text color="var(--text-tertiary)" fontSize="sm" mb={2} className={playfair.className}>
+                                                Passcode: {concert.passcode}
+                                            </Text>
+                                        )}
+                                        
+                                        <Box display="flex" flexDirection="column" gap={2} mt={4}>
+                                            {concert.performances.map((performance) => (
+                                                <Box key={performance.id} ml={4}>
+                                                    <Text 
+                                                        color="var(--text-secondary)" 
+                                                        fontSize="1.1rem"
+                                                        fontStyle="italic" 
+                                                    >
+                                                        {performance.title}
+                                                    </Text>
+                                                </Box>
+                                            ))}
+                                        </Box>
+                                    </Box>
+                                    
                                     {isAdmin && (
-                                        <Button alignSelf="flex-end" paddingX={8} onClick={(e) => {
-                                            e.stopPropagation();
-                                            e.preventDefault();
-                                            setConcertToDelete(concert.id);
-                                        }}>Delete</Button>
+                                        <Button 
+                                            size="sm"
+                                            variant="ghost"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                e.preventDefault();
+                                                setConcertToDelete(concert.id);
+                                            }}
+                                            alignSelf="flex-start"
+                                            mt={2}
+                                        >
+                                            Delete
+                                        </Button>
                                     )}
-                                </Card.Body>
-                            </Card.Root>
+                                </Box>
+                            </Box>
                         )) : (
                             <Text color="var(--text-primary)" fontSize="xl" textAlign="center">
                                 No concerts available at the moment.
                             </Text>
                         )}
-
-
                     </Box>
                 </Container>
             </div>

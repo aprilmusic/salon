@@ -1,9 +1,14 @@
-import { Button, Heading, Field, Input, Portal, Box } from "@chakra-ui/react";
-import { Text, Card, Dialog } from "@chakra-ui/react";
-import { Playfair_Display } from "next/font/google";
+import { Button, Field, Input, Portal, Box } from "@chakra-ui/react";
+import { Text, Dialog } from "@chakra-ui/react";
+import { Alex_Brush, Playfair_Display } from "next/font/google";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
+
+const alexBrush = Alex_Brush({
+    subsets: ["latin"],
+    weight: ["400"],
+});
 
 const playfair = Playfair_Display({
     subsets: ["latin"],
@@ -92,62 +97,93 @@ export default function Performance({
 
     return (
         <>
-            <Box position="relative" width="100%">
-                {/* Main card content - draggable only if not frozen */}
-                <Card.Root
-                    ref={setNodeRef}
-                    style={style}
-                    {...(!isFrozen ? { ...attributes, ...listeners } : {})}
-                    bg="var(--content-background)"
-                    borderColor="var(--border)"
-                    boxShadow="sm"
-                    _hover={{ 
-                        cursor: isFrozen ? 'default' : 'grab',
-                        boxShadow: "md",
-                        transform: isFrozen ? 'none' : 'translateY(-2px)' 
-                    }}
-                    _active={{ cursor: isFrozen ? 'default' : 'grabbing' }}
+            <Box 
+                position="relative" 
+                width="100%" 
+                ref={setNodeRef}
+                style={style}
+                {...(!isFrozen ? { ...attributes, ...listeners } : {})}
+                padding="20px 0"
+                borderBottom="1px dotted var(--text-secondary)"
+                _hover={{ 
+                    cursor: isFrozen ? 'default' : 'grab',
+                    backgroundColor: "rgba(0,0,0,0.03)",
+                }}
+                _active={{ cursor: isFrozen ? 'default' : 'grabbing' }}
+                transition="all 0.2s ease"
+                title={isFrozen ? "This concert is frozen. Performances cannot be reordered." : ""}
+            >
+                <Box 
+                    display="flex" 
+                    justifyContent="space-between" 
+                    alignItems="baseline"
+                    className={playfair.className}
+                    mb={2}
                     width="100%"
-                    minHeight="160px"
-                    transition="all 0.2s ease"
-                    title={isFrozen ? "This concert is frozen. Performances cannot be reordered." : ""}
                 >
-                    <Card.Body p={6} fontFamily={playfair.className}>
-                        <Heading
-                            as="h1"
-                            size="lg"
-                            fontSize="1.5rem"
-                            color="var(--text-primary)"
-                            mb={4}
-                            fontFamily={playfair.className}
-                        >
-                            {title}
-                        </Heading>
-                        <Text color="var(--text-secondary)" fontSize="md" mb={3}>
-                            Composer: {composer}
-                        </Text>
-                        <Text color="var(--text-tertiary)" fontSize="md">
-                            Performers: {performers}
-                        </Text>
-                    </Card.Body>
-                </Card.Root>
-
-                {/* Delete button positioned absolutely - only enabled if not frozen */}
-                {!isFrozen && (
-                    <Box
-                        position="absolute"
-                        bottom={6}
-                        right={6}
-                        zIndex={2}
+                    <Text 
+                        fontSize="1.4rem" 
+                        fontWeight="600"
+                        color="var(--text-primary)"
+                        fontStyle="italic"
+                        maxWidth="40%"
                     >
+                        {title}
+                    </Text>
+                    <Box 
+                        display="flex" 
+                        alignItems="baseline"
+                        flex="1"
+                        minWidth="0"
+                    >
+                        <Text 
+                            as="span" 
+                            color="var(--text-secondary)" 
+                            fontSize="1.4rem"
+                            mx={2}
+                            flexGrow={1}
+                            overflow="hidden"
+                            style={{
+                                textOverflow: "clip",
+                                whiteSpace: "nowrap"
+                            }}
+                        >
+                            {".".repeat(100)}
+                        </Text>
+                        <Text 
+                            fontSize="1.4rem" 
+                            fontWeight="600"
+                            color="var(--text-primary)"
+                            textAlign="right"
+                            maxWidth="40%"
+                        >
+                            {composer}
+                        </Text>
+                    </Box>
+                </Box>
+                <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+                    <Text 
+                        color="var(--text-tertiary)" 
+                        fontSize="1.1rem" 
+                        className={playfair.className}
+                        ml={4}
+                    >
+                        {performers}
+                    </Text>
+
+                    {/* Delete button - only enabled if not frozen */}
+                    {!isFrozen && (
                         <Button
-                            px={4}
+                            size="sm"
+                            variant="ghost"
                             onClick={handleOpenDeleteDialog}
+                            ml={4}
+                            mt={-2}
                         >
                             Delete
                         </Button>
-                    </Box>
-                )}
+                    )}
+                </Box>
             </Box>
 
             {/* Delete Dialog */}
@@ -165,9 +201,9 @@ export default function Performance({
                             boxShadow="md"
                         >
                             <Dialog.Header>
-                                <Dialog.Title color="var(--text-primary)">Delete Performance</Dialog.Title>
+                                <Dialog.Title color="var(--text-primary)" className={alexBrush.className}>Delete Performance</Dialog.Title>
                             </Dialog.Header>
-                            <Dialog.Body pb="4">
+                            <Dialog.Body pb="4" className={playfair.className}>
                                 <Text mb={4}>Are you sure you want to delete this performance?</Text>
                                 <Field.Root>
                                     <Field.Label>Enter concert password to confirm</Field.Label>

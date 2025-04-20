@@ -1,5 +1,5 @@
 import Head from "next/head";
-import { Cormorant_Garamond } from "next/font/google";
+import { Alex_Brush, Playfair_Display } from "next/font/google";
 import Concert from "@/components/Concert";
 import { Box } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -8,9 +8,14 @@ import { Spinner } from "@chakra-ui/react"
 import { useAdmin } from "@/lib/hooks/useAdmin";
 
 
-const cormorant = Cormorant_Garamond({
+const alexBrush = Alex_Brush({
   subsets: ["latin"],
-  weight: ["300", "400", "600"],
+  weight: ["400"],
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["400", "600"],
 });
 
 export default function Home() {
@@ -41,12 +46,12 @@ export default function Home() {
         as="main"
         minH="100vh"
         bg="var(--background)"
-        fontFamily={cormorant.className}
+        className={playfair.className}
       >
         <div className="content-container">
           <Box py={16} px={8}>
             {isAdmin && (
-              <div className="text-4xl mb-4 text-center">🎵</div>
+              <div className={`text-4xl mb-4 text-center ${alexBrush.className}`}>🎵</div>
             )}
             {concert?.success ? (
               <Concert concert={concert.result} />) : (<Spinner />)}

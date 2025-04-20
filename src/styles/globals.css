@@ -7,6 +7,8 @@
   --text-secondary: #555555;
   --text-tertiary: #777777;
   --border: #cccccc;
+  --heading-font: 'Alex Brush', cursive;
+  --body-font: 'Playfair Display', serif;
 }
 
 html,
@@ -18,9 +20,14 @@ body {
 body {
   color: var(--text-primary);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--body-font), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--heading-font);
+  font-weight: 400;
 }
 
 * {
@@ -36,6 +43,7 @@ a {
 
 p {
   color: var(--text-primary);
+  font-family: var(--body-font);
 }
 
 Input {
@@ -50,14 +58,17 @@ Dialog {
 
 Dialog.Title {
   color: var(--text-primary);
+  font-family: var(--heading-font);
 }
 
 Field.Label {
   color: var(--text-primary);
+  font-family: var(--body-font);
 }
 
 Text {
   color: var(--text-secondary);
+  font-family: var(--body-font);
 }
 
 Button {
@@ -85,4 +96,13 @@ Label {
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   position: relative;
+}
+
+/* Font utility classes */
+.heading-font {
+  font-family: var(--heading-font) !important;
+}
+
+.body-font {
+  font-family: var(--body-font) !important;
 }

@@ -1,5 +1,5 @@
 import Performance from "./Performance";
-import { Playfair_Display } from "next/font/google";
+import { Alex_Brush, Playfair_Display } from "next/font/google";
 import {
     Box, Button, Container, Heading, Text,
     Dialog, Field, Input, Portal, Stack,
@@ -23,6 +23,11 @@ interface EditConcertFormValues {
     passcode: string;
     frozen: boolean;
 }
+
+const alexBrush = Alex_Brush({
+    subsets: ["latin"],
+    weight: ["400"],
+});
 
 const playfair = Playfair_Display({
     subsets: ["latin"],
@@ -331,30 +336,37 @@ export default function Concert({ concert }: { concert: Concert }) {
                 textAlign="center"
                 mb={12}
                 color="var(--text-primary)"
-                fontFamily={playfair.className}
+                className={alexBrush.className}
                 fontWeight="semibold"
             >
                 Salon ({new Date(concert.date).toLocaleDateString()})
             </Heading>
 
-            <DndContext collisionDetection={closestCenter} onDragEnd={!isFrozen ? handleDragEnd : undefined}>
-                <SortableContext items={performances.map(p => p.id)} strategy={verticalListSortingStrategy}>
-                    <Box display="flex" flexDirection="column" gap={8} paddingBottom={8}>
-                        {performances.map((item) => (
-                            <Performance
-                                key={item.id}
-                                id={item.id}
-                                title={item.title}
-                                composer={item.composer}
-                                performers={item.performers}
-                                concertId={concert.id}
-                                passcode={concert.passcode}
-                                isFrozen={isFrozen}
-                            />
-                        ))}
-                    </Box>
-                </SortableContext>
-            </DndContext>
+            <Box 
+                bg="var(--content-background)"
+                p={8}
+                mb={8}
+                className={playfair.className}
+            >
+                <DndContext collisionDetection={closestCenter} onDragEnd={!isFrozen ? handleDragEnd : undefined}>
+                    <SortableContext items={performances.map(p => p.id)} strategy={verticalListSortingStrategy}>
+                        <Box display="flex" flexDirection="column">
+                            {performances.map((item) => (
+                                <Performance
+                                    key={item.id}
+                                    id={item.id}
+                                    title={item.title}
+                                    composer={item.composer}
+                                    performers={item.performers}
+                                    concertId={concert.id}
+                                    passcode={concert.passcode}
+                                    isFrozen={isFrozen}
+                                />
+                            ))}
+                        </Box>
+                    </SortableContext>
+                </DndContext>
+            </Box>
 
             {/* Add Performance Dialog */}
             {!isFrozen && (
@@ -375,9 +387,9 @@ export default function Concert({ concert }: { concert: Concert }) {
                                 borderColor="var(--border)"
                                 boxShadow="md">
                                 <Dialog.Header>
-                                    <Dialog.Title color="var(--text-primary)">Add a performance</Dialog.Title>
+                                    <Dialog.Title color="var(--text-primary)" className={alexBrush.className}>Add a performance</Dialog.Title>
                                 </Dialog.Header>
-                                <Dialog.Body pb="4">
+                                <Dialog.Body pb="4" className={playfair.className}>
                                     <form onSubmit={onSubmitCreatePerformance}>
                                         <Stack gap="4" align="flex-start" maxW="sm">
                                             <Field.Root>
@@ -443,9 +455,9 @@ export default function Concert({ concert }: { concert: Concert }) {
                             borderColor="var(--border)"
                             boxShadow="md">
                             <Dialog.Header>
-                                <Dialog.Title color="var(--text-primary)">Edit Concert</Dialog.Title>
+                                <Dialog.Title color="var(--text-primary)" className={alexBrush.className}>Edit Concert</Dialog.Title>
                             </Dialog.Header>
-                            <Dialog.Body pb="4">
+                            <Dialog.Body pb="4" className={playfair.className}>
                                 <form onSubmit={onSubmitEdit}>
                                     <Stack gap="4" align="flex-start" maxW="sm">
                                         <Field.Root invalid={!!errorsEditForm.date}>
