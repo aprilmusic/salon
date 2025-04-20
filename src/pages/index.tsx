@@ -40,16 +40,18 @@ export default function Home() {
       <Box
         as="main"
         minH="100vh"
-        bgGradient="var(--background)"
-        py={16}
-        px={8}
+        bg="var(--background)"
         fontFamily={cormorant.className}
       >
-        {isAdmin && (
-          <div className="text-4xl mb-4 text-center">🎵</div>
-        )}
-        {concert?.success ? (
-          <Concert concert={concert.result} />) : (<Spinner />)}
+        <div className="content-container">
+          <Box py={16} px={8}>
+            {isAdmin && (
+              <div className="text-4xl mb-4 text-center">🎵</div>
+            )}
+            {concert?.success ? (
+              <Concert concert={concert.result} />) : (<Spinner />)}
+          </Box>
+        </div>
       </Box>
     </>
   );

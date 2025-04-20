@@ -98,13 +98,18 @@ export default function Performance({
                     ref={setNodeRef}
                     style={style}
                     {...(!isFrozen ? { ...attributes, ...listeners } : {})}
-                    bg="var(--background-secondary)"
-                    backdropFilter="blur(8px)"
+                    bg="var(--content-background)"
                     borderColor="var(--border)"
-                    _hover={{ cursor: isFrozen ? 'default' : 'grab' }}
+                    boxShadow="sm"
+                    _hover={{ 
+                        cursor: isFrozen ? 'default' : 'grab',
+                        boxShadow: "md",
+                        transform: isFrozen ? 'none' : 'translateY(-2px)' 
+                    }}
                     _active={{ cursor: isFrozen ? 'default' : 'grabbing' }}
                     width="100%"
                     minHeight="160px"
+                    transition="all 0.2s ease"
                     title={isFrozen ? "This concert is frozen. Performances cannot be reordered." : ""}
                 >
                     <Card.Body p={6} fontFamily={playfair.className}>
@@ -155,9 +160,9 @@ export default function Performance({
                     <Dialog.Positioner>
                         <Dialog.Content
                             p={4}
-                            bg="var(--background)"
-                            backdropFilter="blur(8px)"
+                            bg="var(--content-background)"
                             borderColor="var(--border)"
+                            boxShadow="md"
                         >
                             <Dialog.Header>
                                 <Dialog.Title color="var(--text-primary)">Delete Performance</Dialog.Title>
@@ -171,8 +176,7 @@ export default function Performance({
                                         onChange={(e) => setEnteredPassword(e.target.value)}
                                         placeholder="Concert password"
                                         paddingLeft={1}
-                                        bg="var(--background-secondary)"
-                                        color="black"
+                                        color="var(--text-primary)"
                                     />
                                     {passwordError && <Text color="red.500" fontSize="sm">{passwordError}</Text>}
                                 </Field.Root>

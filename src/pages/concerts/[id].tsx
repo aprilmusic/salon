@@ -34,16 +34,18 @@ export default function ConcertPage() {
         <Box
             as="main"
             minH="100vh"
-            bgGradient="linear-gradient(#fff8e1, #ffe0b2)"
-            py={16}
-            px={8}
+            bg="var(--background)"
             fontFamily={cormorant.className}
         >
-            {concert?.success ? (
-                <Concert concert={concert.result} />
-            ) : (
-                <Spinner />
-            )}
+            <div className="content-container">
+                <Box py={16} px={8}>
+                    {concert?.success ? (
+                        <Concert concert={concert.result} />
+                    ) : (
+                        <Spinner />
+                    )}
+                </Box>
+            </div>
         </Box>
     );
 }

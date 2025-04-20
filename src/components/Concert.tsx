@@ -371,9 +371,9 @@ export default function Concert({ concert }: { concert: Concert }) {
                         <Dialog.Backdrop />
                         <Dialog.Positioner>
                             <Dialog.Content p={4}
-                                bg="var(--background)"
-                                backdropFilter="blur(8px)"
-                                borderColor="var(--border)">
+                                bg="var(--content-background)"
+                                borderColor="var(--border)"
+                                boxShadow="md">
                                 <Dialog.Header>
                                     <Dialog.Title color="var(--text-primary)">Add a performance</Dialog.Title>
                                 </Dialog.Header>
@@ -382,21 +382,21 @@ export default function Concert({ concert }: { concert: Concert }) {
                                         <Stack gap="4" align="flex-start" maxW="sm">
                                             <Field.Root>
                                                 <Field.Label>Title</Field.Label>
-                                                <Input paddingLeft={1} color="black" {...registerPerformanceForm("title", { required: "Title is required" })} />
+                                                <Input paddingLeft={1} color="var(--text-primary)" {...registerPerformanceForm("title", { required: "Title is required" })} />
                                                 {errorsPerformanceForm.title && (
                                                     <Text color="red.500" fontSize="sm">{errorsPerformanceForm.title.message}</Text>
                                                 )}
                                             </Field.Root>
                                             <Field.Root>
                                                 <Field.Label>Composer</Field.Label>
-                                                <Input paddingLeft={1} color="black" {...registerPerformanceForm("composer", { required: "Composer is required" })} />
+                                                <Input paddingLeft={1} color="var(--text-primary)" {...registerPerformanceForm("composer", { required: "Composer is required" })} />
                                                 {errorsPerformanceForm.composer && (
                                                     <Text color="red.500" fontSize="sm">{errorsPerformanceForm.composer.message}</Text>
                                                 )}
                                             </Field.Root>
                                             <Field.Root>
                                                 <Field.Label>Performers</Field.Label>
-                                                <Input paddingLeft={1} color="black" {...registerPerformanceForm("performers", { required: "Performers are required" })} />
+                                                <Input paddingLeft={1} color="var(--text-primary)" {...registerPerformanceForm("performers", { required: "Performers are required" })} />
                                                 {errorsPerformanceForm.performers && (
                                                     <Text color="red.500" fontSize="sm">{errorsPerformanceForm.performers.message}</Text>
                                                 )}
@@ -406,7 +406,7 @@ export default function Concert({ concert }: { concert: Concert }) {
                                                 <Input
                                                     type="password"
                                                     paddingLeft={1}
-                                                    color="black"
+                                                    color="var(--text-primary)"
                                                     {...registerPerformanceForm("passcode", { required: "Password is required" })}
                                                 />
                                                 {errorsPerformanceForm.passcode && (
@@ -439,9 +439,9 @@ export default function Concert({ concert }: { concert: Concert }) {
                     <Dialog.Backdrop />
                     <Dialog.Positioner>
                         <Dialog.Content p={4}
-                            bg="var(--background)"
-                            backdropFilter="blur(8px)"
-                            borderColor="var(--border">
+                            bg="var(--content-background)"
+                            borderColor="var(--border)"
+                            boxShadow="md">
                             <Dialog.Header>
                                 <Dialog.Title color="var(--text-primary)">Edit Concert</Dialog.Title>
                             </Dialog.Header>
@@ -452,7 +452,7 @@ export default function Concert({ concert }: { concert: Concert }) {
                                             <Field.Label>Date</Field.Label>
                                             <Input
                                                 paddingLeft={1}
-                                                color="black"
+                                                color="var(--text-primary)"
                                                 {...registerEditForm("date", {
                                                     required: "Date is required",
                                                     value: concert.date.slice(0, 10)
@@ -463,7 +463,7 @@ export default function Concert({ concert }: { concert: Concert }) {
                                             <Field.Label>Passcode</Field.Label>
                                             <Input
                                                 paddingLeft={1}
-                                                color="black"
+                                                color="var(--text-primary)"
                                                 {...registerEditForm("passcode", {
                                                     required: "Passcode is required",
                                                     value: concert.passcode
@@ -481,8 +481,8 @@ export default function Concert({ concert }: { concert: Concert }) {
                                                     padding: "8px",
                                                     borderRadius: "4px",
                                                     border: "1px solid var(--border)",
-                                                    backgroundColor: "white",
-                                                    color: "black"
+                                                    backgroundColor: "var(--content-background)",
+                                                    color: "var(--text-primary)"
                                                 }}
                                             >
                                                 <option value="false">Editable (performances can be modified)</option>

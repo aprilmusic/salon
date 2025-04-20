@@ -12,7 +12,13 @@ export interface ColorModeProviderProps extends ThemeProviderProps { }
 
 export function ColorModeProvider(props: ColorModeProviderProps) {
   return (
-    <ThemeProvider attribute="class" disableTransitionOnChange {...props} />
+    <ThemeProvider 
+      attribute="class" 
+      disableTransitionOnChange 
+      defaultTheme="dark"
+      forcedTheme="dark"
+      {...props} 
+    />
   )
 }
 
@@ -27,23 +33,25 @@ export interface UseColorModeReturn {
 export function useColorMode(): UseColorModeReturn {
   const { resolvedTheme, setTheme } = useTheme()
   const toggleColorMode = () => {
-    setTheme(resolvedTheme === "light" ? "dark" : "light")
+    // We're not changing the actual color mode anymore as we want a consistent black background
+    // But keeping this function for compatibility
+    console.log("Color mode toggling is disabled in this theme");
   }
   return {
-    colorMode: resolvedTheme as ColorMode,
-    setColorMode: setTheme,
+    colorMode: "dark", // Always return dark for our black background theme
+    setColorMode: () => console.log("Color mode changing is disabled in this theme"),
     toggleColorMode,
   }
 }
 
 export function useColorModeValue<T>(light: T, dark: T) {
-  const { colorMode } = useColorMode()
-  return colorMode === "dark" ? dark : light
+  // Always return the dark value for our black background theme
+  return dark;
 }
 
 export function ColorModeIcon() {
-  const { colorMode } = useColorMode()
-  return colorMode === "dark" ? <LuMoon /> : <LuSun />
+  // Always show moon icon for our dark theme
+  return <LuMoon />;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -53,13 +61,11 @@ export const ColorModeButton = React.forwardRef<
   HTMLButtonElement,
   ColorModeButtonProps
 >(function ColorModeButton(props, ref) {
-  const { toggleColorMode } = useColorMode()
   return (
     <ClientOnly fallback={<Skeleton boxSize="8" />}>
       <IconButton
-        onClick={toggleColorMode}
         variant="ghost"
-        aria-label="Toggle color mode"
+        aria-label="Toggle color mode (disabled)"
         size="sm"
         ref={ref}
         {...props}
