@@ -102,7 +102,7 @@ export default function Performance({
             <ItemCard
                 ref={setNodeRef}
                 style={style}
-                {...(!isFrozen ? { ...attributes, ...listeners } : {})}
+                {...(!isFrozen ? { ...attributes } : {})}
                 isDraggable={true}
                 isFrozen={isFrozen}
                 title={isFrozen ? "This concert is frozen. Performances cannot be reordered." : ""}
@@ -115,6 +115,7 @@ export default function Performance({
                     className={playfair.className}
                     mb={1}
                     width="100%"
+                    {...(!isFrozen ? { ...listeners } : {})}
                 >
                     <Text 
                         fontSize="var(--perf-title-size)"
