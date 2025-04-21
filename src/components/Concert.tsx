@@ -2,7 +2,7 @@ import Performance from "./Performance";
 import { Playfair_Display } from "next/font/google";
 import {
     Box, Button, Container, Text,
-    Dialog, Field, Input, Portal, Stack,
+    Dialog, Field, Input, Portal, Stack, Link,
 } from "@chakra-ui/react";
 import { useState } from 'react';
 import { useForm } from "react-hook-form"
@@ -24,6 +24,7 @@ interface EditConcertFormValues {
     date: string;
     passcode: string;
     frozen: boolean;
+    videoLink?: string;
 }
 
 const playfair = Playfair_Display({
@@ -275,6 +276,7 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                 date: new Date(data.date).toISOString(),
                 passcode: data.passcode,
                 frozen: data.frozen,
+                videoLink: data.videoLink,
             };
 
             console.log('Request body:', requestBody);
@@ -339,6 +341,23 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                         className={playfair.className}
                     >
                         {new Date(concert.date).toLocaleDateString()}
+                        {concert.videoLink && (
+                            <>
+                                {" / "}
+                                <Link 
+                                    href={concert.videoLink} 
+                                    target="_blank"
+                                    fontSize="1rem"
+                                    rel="noopener noreferrer"
+                                    color="var(--text-primary)"
+                                    textDecoration="underline"
+                                    _hover={{ opacity: 0.8 }}
+                                    display="inline-block"
+                                >
+                                    recordings
+                                </Link>
+                            </>
+                        )}
                     </Text>
                     
                     {/* Wrap the items with DnD context if not frozen */}
@@ -518,6 +537,20 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                                                     value: concert.passcode
                                                 })}
                                             />
+                                        </Field.Root>
+                                        <Field.Root>
+                                            <Field.Label>Video Link (optional)</Field.Label>
+                                            <Input
+                                                paddingLeft={1}
+                                                color="var(--text-primary)"
+                                                {...registerEditForm("videoLink", {
+                                                    value: concert.videoLink || ""
+                                                })}
+                                                placeholder="https://..."
+                                            />
+                                            <Text fontSize="sm" color="gray.500" mt={2}>
+                                                Link to video recordings of the concert
+                                            </Text>
                                         </Field.Root>
                                         <Field.Root>
                                             <Field.Label>Concert Status</Field.Label>

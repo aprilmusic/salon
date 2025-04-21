@@ -68,11 +68,26 @@ async function handleGetConcertById(
             return { success: false, error: { message: 'Concert not found' } }
         }
 
+        // Create a proper response with all required fields
+        const response = {
+            id: concert.id,
+            name: concert.name ?? 'Salon',
+            date: concert.date.toISOString(),
+            passcode: concert.passcode,
+            frozen: concert.frozen,
+            videoLink: concert.videoLink,
+            performances: concert.performances.map(p => ({
+                id: p.id,
+                title: p.title,
+                composer: p.composer,
+                performers: p.performers,
+                order: p.order
+            }))
+        };
+
         return {
-            success: true, result: {
-                ...concert,
-                date: concert.date.toISOString()
-            }
+            success: true, 
+            result: response
         }
     } catch (error) {
         console.error('Error fetching concert:', error)
@@ -87,7 +102,8 @@ const handleUpdateConcertByIdParamsSchema = z.object({
     name: z.string().optional(),
     date: z.string().optional(),
     passcode: z.string().optional(),
-    frozen: z.boolean().optional()
+    frozen: z.boolean().optional(),
+    videoLink: z.string().nullable().optional()
 })
 type HandleUpdateConcertByIdParams = z.infer<typeof handleUpdateConcertByIdParamsSchema>
 
@@ -120,12 +136,26 @@ async function handleUpdateConcertById(
             frozen: result.frozen
         });
 
+        // Create a proper response with all required fields
+        const response = {
+            id: result.id,
+            name: result.name ?? 'Salon',
+            date: result.date.toISOString(),
+            passcode: result.passcode,
+            frozen: result.frozen,
+            videoLink: result.videoLink,
+            performances: result.performances.map(p => ({
+                id: p.id,
+                title: p.title,
+                composer: p.composer,
+                performers: p.performers,
+                order: p.order
+            }))
+        };
+
         return {
             success: true,
-            result: {
-                ...result,
-                date: result.date.toISOString()
-            }
+            result: response
         }
 
     } catch (error) {
