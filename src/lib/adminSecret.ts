@@ -1,0 +1,1 @@
+export const ADMIN_COOKIE_VALUE = process.env.ADMIN_SECRET;

@@ -7,7 +7,7 @@ import { parse } from 'cookie'
 
 const prisma = new PrismaClient()
 const ADMIN_COOKIE_NAME = 'admin_token';
-const ADMIN_COOKIE_VALUE = process.env.ADMIN_SECRET || 'your-secure-secret-here';
+import { ADMIN_COOKIE_VALUE } from '@/lib/adminSecret';
 
 export default async function requestHandler(request: NextApiRequest, response: NextApiResponse) {
     if (request.method === 'GET') {
@@ -202,3 +202,4 @@ async function handleDeleteConcertById(
         await prisma.$disconnect()
     }
 }
+
