@@ -16,7 +16,6 @@ interface PerformanceFormValues {
     title: string
     composer: string
     performers: string
-    passcode: string
 }
 
 interface EditConcertFormValues {
@@ -92,7 +91,6 @@ export default function Concert({ concert }: { concert: ConcertType }) {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [performances, setPerformances] = useState(concert.performances);
     const [error, setError] = useState<string | null>(null);
-    const [performanceFormError, setPerformanceFormError] = useState<string | null>(null);
     const { isAdmin } = useAdmin();
 
     // Use the frozen state directly from the concert
@@ -114,13 +112,8 @@ export default function Concert({ concert }: { concert: ConcertType }) {
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const createPerformance = async ({ title, composer, performers, passcode }: PerformanceFormValues) => {
-        setPerformanceFormError(null);
-
-        if (passcode !== concert.passcode) {
-            setPerformanceFormError("Incorrect password");
-            return;
-        }
+    const createPerformance = async ({ title, composer, performers }: PerformanceFormValues) => {
+        setError(null);
 
         try {
             setIsLoading(true);
@@ -141,7 +134,6 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                     composer,
                     performers,
                     order: newOrder,
-                    passcode,
                 }),
             });
             const data = await response.json();
@@ -455,21 +447,6 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                                                 <Input paddingLeft={1} color="var(--text-primary)" {...registerPerformanceForm("performers", { required: "Performers are required" })} />
                                                 {errorsPerformanceForm.performers && (
                                                     <Text color="red.500" fontSize="sm">{errorsPerformanceForm.performers.message}</Text>
-                                                )}
-                                            </Field.Root>
-                                            <Field.Root>
-                                                <Field.Label>Concert Password</Field.Label>
-                                                <Input
-                                                    type="password"
-                                                    paddingLeft={1}
-                                                    color="var(--text-primary)"
-                                                    {...registerPerformanceForm("passcode", { required: "Password is required" })}
-                                                />
-                                                {errorsPerformanceForm.passcode && (
-                                                    <Text color="red.500" fontSize="sm">{errorsPerformanceForm.passcode.message}</Text>
-                                                )}
-                                                {performanceFormError && (
-                                                    <Text color="red.500" fontSize="sm">{performanceFormError}</Text>
                                                 )}
                                             </Field.Root>
                                         </Stack>
