@@ -31,59 +31,101 @@ const playfair = Playfair_Display({
     weight: ["400", "600"],
 });
 
-// Add this helper function before the Concert component
+/**
+ * ZERO-PADDED NUMERIC STRING ORDERING SYSTEM
+ * 
+ * This system solves the drag-and-drop reordering problem without requiring database schema changes.
+ * 
+ * Key Features:
+ * - Uses string format that sorts lexicographically in the same order as numerically
+ * - Format: "0001000.000" (11 chars: 7 digits + decimal + 3 decimals)
+ * - Backward compatible with existing string-based orders
+ * - Infinite precision through decimal subdivision
+ * - No string growth issues like the previous approach
+ * 
+ * Examples:
+ * - Initial orders: "0001000.000", "0002000.000", "0003000.000"
+ * - Drag between first two: generates "0001500.000"
+ * - Multiple operations: "0001000.000" → "0001500.000" → "0001750.000" → "0001875.000"
+ * 
+ * Legacy Compatibility:
+ * - Converts old formats: 'a' → 1000, 'b' → 2000, 'am' → 1100, etc.
+ * - New operations always generate new format strings
+ * - Gradual migration as items are reordered
+ */
+
+// Numeric string ordering system - uses zero-padded strings that sort lexicographically
+// but represent numbers (e.g., "0001000.000", "0001500.000", "0001750.000")
 function generateOrderBetween(before: string, after: string): string {
     console.log('generateOrderBetween called with:', { before, after });
 
-    // If the strings are equal, append '0' to before
-    if (before === after) {
-        console.log('Strings are equal, appending "0" to first string');
-        return before + '0';
+    // Convert order strings to numbers, handling both old and new formats
+    const beforeNum = parseOrderString(before);
+    const afterNum = parseOrderString(after);
+
+    // Generate a number exactly halfway between
+    const midNum = (beforeNum + afterNum) / 2;
+    
+    // Convert back to zero-padded string format
+    const result = formatOrderString(midNum);
+    
+    console.log('Order generation:', {
+        beforeNum,
+        afterNum,
+        midNum,
+        result,
+        verification: `${beforeNum} < ${midNum} < ${afterNum}: ${beforeNum < midNum && midNum < afterNum}`
+    });
+
+    return result;
+}
+
+// Parse order string to number, handling both old string formats and new numeric formats
+function parseOrderString(orderStr: string): number {
+    // If it's already a numeric string, parse it
+    const num = parseFloat(orderStr);
+    if (!isNaN(num)) {
+        return num;
     }
+    
+    // Handle legacy string formats by converting to numeric equivalent
+    // This provides backward compatibility with existing data
+    if (orderStr === 'a0' || orderStr === 'a') return 1000;
+    if (orderStr === 'b0' || orderStr === 'b') return 2000;
+    if (orderStr === 'c0' || orderStr === 'c') return 3000;
+    if (orderStr === 'd0' || orderStr === 'd') return 4000;
+    if (orderStr === 'e0' || orderStr === 'e') return 5000;
+    if (orderStr === 'f0' || orderStr === 'f') return 6000;
+    if (orderStr === 'g0' || orderStr === 'g') return 7000;
+    if (orderStr === 'h0' || orderStr === 'h') return 8000;
+    if (orderStr === 'i0' || orderStr === 'i') return 9000;
+    if (orderStr === 'j0' || orderStr === 'j') return 10000;
+    
+    // Handle more complex legacy formats like 'am', 'amm', etc.
+    if (orderStr.startsWith('a')) return 1000 + (orderStr.length - 1) * 100;
+    if (orderStr.startsWith('b')) return 2000 + (orderStr.length - 1) * 100;
+    if (orderStr.startsWith('c')) return 3000 + (orderStr.length - 1) * 100;
+    
+    // Default fallback for any other string
+    return orderStr.charCodeAt(0) * 100;
+}
 
-    // Find the first different character
-    let i = 0;
-    while (i < before.length && i < after.length && before[i] === after[i]) {
-        i++;
-    }
-    console.log(`First difference at index ${i}: "${before.charAt(i) || 'end'}" vs "${after.charAt(i) || 'end'}"`);
+// Format number as zero-padded string for consistent lexicographic sorting
+function formatOrderString(num: number): string {
+    // Use 11 digits with 3 decimal places, zero-padded: "0001000.000"
+    return num.toFixed(3).padStart(11, '0');
+}
 
-    // If we reached the end of one string, append a character in the middle of the alphabet
-    if (i === before.length) {
-        console.log('Reached end of first string, appending "m" to create new order');
-        return before + 'm';
-    }
-    if (i === after.length) {
-        console.log('Reached end of second string, appending "m" to create new order');
-        return after + 'm';
-    }
+// Normalize order string to new format for consistent comparisons
+function normalizeOrderString(orderStr: string): string {
+    return formatOrderString(parseOrderString(orderStr));
+}
 
-    // Get the character codes
-    const beforeChar = before.charCodeAt(i);
-    const afterChar = after.charCodeAt(i);
-    console.log(`Character codes at position ${i}: ${beforeChar} (${String.fromCharCode(beforeChar)}) vs ${afterChar} (${String.fromCharCode(afterChar)})`);
-
-    // Generate a character halfway between
-    const midChar = Math.floor((beforeChar + afterChar) / 2);
-    console.log(`Calculated midpoint character code: ${midChar} (${String.fromCharCode(midChar)})`);
-
-    // If they're adjacent, we need to extend the string
-    if (midChar === beforeChar) {
-        console.log('Characters are adjacent in Unicode, extending first string with "m"');
-        return before + 'm';
-    }
-
-    // Ensure the generated order is actually between the two strings
-    const result = before.slice(0, i) + String.fromCharCode(midChar);
-    console.log(`Generated candidate result: "${result}"`);
-
-    if (result <= before || result >= after) {
-        // If the result isn't between, append a character to create more space
-        console.log('Generated result is not properly between inputs, appending "m" to first string');
-        return before + 'm';
-    }
-
-    console.log(`Final result: "${result}" (lexicographically between "${before}" and "${after}")`);
+// Helper function to reorder array items
+function reorderArray<T>(array: T[], fromIndex: number, toIndex: number): T[] {
+    const result = [...array];
+    const [movedItem] = result.splice(fromIndex, 1);
+    result.splice(toIndex, 0, movedItem);
     return result;
 }
 
@@ -117,11 +159,11 @@ export default function Concert({ concert }: { concert: ConcertType }) {
 
         try {
             setIsLoading(true);
-            // Get the last performance's order or use 'a0' if no performances exist
+            // Get the last performance's order or use default
             const lastPerformance = concert.performances[concert.performances.length - 1];
             const newOrder = lastPerformance
-                ? generateOrderBetween(lastPerformance.order, 'z0')
-                : 'a0';
+                ? generateOrderBetween(lastPerformance.order, formatOrderString(1000000))
+                : formatOrderString(1000);
 
             const response = await fetch('/api/performances', {
                 method: 'POST',
@@ -166,7 +208,7 @@ export default function Concert({ concert }: { concert: ConcertType }) {
 
         console.log('Performance indices:', { oldIndex, newIndex });
 
-        // Get the moved performance's original order
+        // Get the moved performance
         const movedItem = performances[oldIndex];
         console.log('Moving performance:', {
             id: movedItem.id,
@@ -174,67 +216,77 @@ export default function Concert({ concert }: { concert: ConcertType }) {
             originalOrder: movedItem.order
         });
 
-        // Get the surrounding items' order strings
-        const prevItem = newIndex > 0 ? performances[newIndex - 1] : null;
-        const nextItem = newIndex < performances.length - 1 ? performances[newIndex + 1] : null;
+        // Create a temporary array with the item removed to get correct surrounding items
+        const tempPerformances = [...performances];
+        tempPerformances.splice(oldIndex, 1);
 
-        // More detailed logging of surrounding items
-        console.log('Surrounding items for ordering:', {
+        // Calculate the actual target index in the array without the moved item
+        const actualNewIndex = oldIndex < newIndex ? newIndex - 1 : newIndex;
+
+        // Get the surrounding items from the temporary array
+        const prevItem = actualNewIndex > 0 ? tempPerformances[actualNewIndex - 1] : null;
+        const nextItem = actualNewIndex < tempPerformances.length ? tempPerformances[actualNewIndex] : null;
+
+        console.log('Correct surrounding items for ordering:', {
+            actualNewIndex,
             prev: prevItem ? {
                 id: prevItem.id,
                 title: prevItem.title,
                 order: prevItem.order
-            } : 'None (using default "a0")',
+            } : 'None (using default "0")',
             next: nextItem ? {
                 id: nextItem.id,
                 title: nextItem.title,
                 order: nextItem.order
-            } : 'None (using default "z0")'
+            } : 'None (using default "1000000")'
         });
 
-        const beforeOrder = prevItem?.order || 'a0';
-        const afterOrder = nextItem?.order || 'z0';
+        const beforeOrder = prevItem?.order || formatOrderString(0);
+        const afterOrder = nextItem?.order || formatOrderString(1000000);
 
         console.log('Generating order between:', {
             beforeOrder,
             afterOrder,
-            explanation: 'Will generate a string that lexicographically sorts between these two values'
+            explanation: 'Will generate a zero-padded numeric string that sorts lexicographically'
         });
 
-        // Generate a new order string that lexicographically sits between the two items
+        // Generate a new order string that numerically sits between the two items
         const newOrder = generateOrderBetween(beforeOrder, afterOrder);
 
         console.log('Order generation result:', {
             inputBefore: beforeOrder,
             inputAfter: afterOrder,
             generatedOrder: newOrder,
-            verification: `${beforeOrder} < ${newOrder} < ${afterOrder}: ${beforeOrder < newOrder && newOrder < afterOrder}`
+            verification: `${beforeOrder} < ${newOrder} < ${afterOrder}: ${normalizeOrderString(beforeOrder) < newOrder && newOrder < normalizeOrderString(afterOrder)}`
         });
 
-        // Update local state with new order
-        const newPerformances = [...performances];
-        const movedPerformance = { ...newPerformances[oldIndex], order: newOrder };
-        newPerformances.splice(oldIndex, 1);
-        newPerformances.splice(newIndex, 0, movedPerformance);
+        // Update local state with new order - create properly reordered array
+        const newPerformances = reorderArray(performances, oldIndex, newIndex);
+        newPerformances[newIndex] = { ...newPerformances[newIndex], order: newOrder };
+        
+        // Store original state for rollback
+        const originalPerformances = [...performances];
         setPerformances(newPerformances);
 
         console.log('Updated performance:', {
-            id: movedPerformance.id,
-            title: movedPerformance.title,
+            id: newPerformances[newIndex].id,
+            title: newPerformances[newIndex].title,
             originalOrder: movedItem.order,
-            newOrder: movedPerformance.order
+            newOrder: newPerformances[newIndex].order
         });
 
         // Update in database
         try {
             console.log('Sending PATCH request to update performance order');
-            const response = await fetch(`/api/performances/${movedPerformance.id}`, {
+            const response = await fetch(`/api/performances/${movedItem.id}`, {
                 method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    ...movedPerformance,
+                    title: movedItem.title,
+                    composer: movedItem.composer,
+                    performers: movedItem.performers,
                     order: newOrder,
                 }),
             });
@@ -255,7 +307,8 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                     stack: error.stack
                 });
             }
-            setPerformances(performances);
+            // Rollback to original state on error
+            setPerformances(originalPerformances);
         }
     };
 

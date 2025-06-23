@@ -12,6 +12,7 @@ export const performanceUpdateSchema = z.object({
     title: z.string(),
     composer: z.string(),
     performers: z.string(),
+    order: z.string(),
 })
 
 export type Performance = z.infer<typeof performanceSchema>
