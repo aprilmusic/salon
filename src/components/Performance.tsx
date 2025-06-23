@@ -4,6 +4,7 @@ import { Great_Vibes, Playfair_Display } from "next/font/google";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { DeleteButton } from "./ui/delete-button";
 import { ItemCard } from "./ui/item-card";
 
@@ -27,6 +28,12 @@ interface PerformanceProps {
     isFrozen?: boolean;
 }
 
+interface EditPerformanceFormValues {
+    title: string;
+    composer: string;
+    performers: string;
+}
+
 const handleDeletePerformance = async (id: string, concertId: string, passcode: string) => {
     try {
         const response = await fetch('/api/performances', {
@@ -45,6 +52,24 @@ const handleDeletePerformance = async (id: string, concertId: string, passcode: 
     }
 };
 
+const handleUpdatePerformance = async (id: string, data: EditPerformanceFormValues) => {
+    try {
+        const response = await fetch(`/api/performances/${id}`, {
+            method: 'PATCH',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) {
+            throw new Error('Failed to update performance');
+        }
+        window.location.reload();
+    } catch (error) {
+        console.error('Error updating performance:', error);
+    }
+};
+
 export default function Performance({
     title,
     composer,
@@ -55,8 +80,10 @@ export default function Performance({
     isFrozen = false,
 }: PerformanceProps) {
     const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+    const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [enteredPassword, setEnteredPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
+    const [editError, setEditError] = useState("");
 
     const {
         attributes,
@@ -68,6 +95,19 @@ export default function Performance({
     } = useSortable({
         id,
         disabled: isFrozen,
+    });
+
+    const {
+        register: registerEditForm,
+        handleSubmit: handleSubmitEditForm,
+        formState: { errors: errorsEditForm },
+        reset: resetEditForm,
+    } = useForm<EditPerformanceFormValues>({
+        defaultValues: {
+            title,
+            composer,
+            performers,
+        }
     });
 
     const style = {
@@ -82,6 +122,17 @@ export default function Performance({
         setIsDeleteDialogOpen(true);
     };
 
+    const handleOpenEditDialog = () => {
+        console.log('handleOpenEditDialog');
+        setIsEditDialogOpen(true);
+        resetEditForm({
+            title,
+            composer,
+            performers,
+        });
+        setEditError("");
+    };
+
     const handleDeleteConfirm = () => {
         if (enteredPassword === passcode) {
             handleDeletePerformance(id, concertId, enteredPassword);
@@ -91,10 +142,20 @@ export default function Performance({
         }
     };
 
+    const handleEditConfirm = (data: EditPerformanceFormValues) => {
+        handleUpdatePerformance(id, data);
+        setIsEditDialogOpen(false);
+    };
+
     const handleCloseDialog = () => {
         setIsDeleteDialogOpen(false);
         setEnteredPassword("");
         setPasswordError("");
+    };
+
+    const handleCloseEditDialog = () => {
+        setIsEditDialogOpen(false);
+        setEditError("");
     };
 
     return (
@@ -170,16 +231,111 @@ export default function Performance({
                         {performers}
                     </Text>
 
-                    {/* Delete button - only enabled if not frozen */}
+                    {/* Action buttons - only enabled if not frozen */}
                     {!isFrozen && (
-                        <DeleteButton
-                            onDelete={handleOpenDeleteDialog}
-                        >
-                            Delete
-                        </DeleteButton>
+                        <Box display="flex" gap={2}>
+                            <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={handleOpenEditDialog}
+                                px={2}
+                                py={1}
+                                fontSize="sm"
+                                borderColor="var(--border)"
+                                color="var(--text-primary)"
+                                _hover={{
+                                    backgroundColor: "var(--hover-bg)",
+                                    borderColor: "var(--text-secondary)"
+                                }}
+                            >
+                                Edit
+                            </Button>
+                            <DeleteButton
+                                onDelete={handleOpenDeleteDialog}
+                            >
+                                Delete
+                            </DeleteButton>
+                        </Box>
                     )}
                 </Box>
             </ItemCard>
+
+            {/* Edit Dialog */}
+            <Dialog.Root
+                open={isEditDialogOpen}
+                onOpenChange={(details) => !details.open && handleCloseEditDialog()}
+            >
+                <Portal>
+                    <Dialog.Backdrop />
+                    <Dialog.Positioner>
+                        <Dialog.Content
+                            p={4}
+                            backgroundColor="transparent"
+                            backgroundImage="url('/paper.jpg')"
+                            borderColor="var(--border)"
+                            boxShadow="md"
+                        >
+                            <Dialog.Header>
+                                <Dialog.Title color="var(--text-primary)" className={greatVibes.className}>Edit Performance</Dialog.Title>
+                            </Dialog.Header>
+                            <Dialog.Body pb="4" className={playfair.className}>
+                                <form onSubmit={handleSubmitEditForm(handleEditConfirm)}>
+                                    <Box display="flex" flexDirection="column" gap={4}>
+                                        <Field.Root>
+                                            <Field.Label>Title</Field.Label>
+                                            <Input
+                                                paddingLeft={1}
+                                                color="var(--text-primary)"
+                                                {...registerEditForm("title", { required: "Title is required" })}
+                                            />
+                                            {errorsEditForm.title && (
+                                                <Text color="red.500" fontSize="sm">{errorsEditForm.title.message}</Text>
+                                            )}
+                                        </Field.Root>
+                                        <Field.Root>
+                                            <Field.Label>Composer</Field.Label>
+                                            <Input
+                                                paddingLeft={1}
+                                                color="var(--text-primary)"
+                                                {...registerEditForm("composer", { required: "Composer is required" })}
+                                            />
+                                            {errorsEditForm.composer && (
+                                                <Text color="red.500" fontSize="sm">{errorsEditForm.composer.message}</Text>
+                                            )}
+                                        </Field.Root>
+                                        <Field.Root>
+                                            <Field.Label>Performers</Field.Label>
+                                            <Input
+                                                paddingLeft={1}
+                                                color="var(--text-primary)"
+                                                {...registerEditForm("performers", { required: "Performers are required" })}
+                                            />
+                                            {errorsEditForm.performers && (
+                                                <Text color="red.500" fontSize="sm">{errorsEditForm.performers.message}</Text>
+                                            )}
+                                        </Field.Root>
+                                        {editError && (
+                                            <Text color="red.500" fontSize="sm">{editError}</Text>
+                                        )}
+                                    </Box>
+                                </form>
+                            </Dialog.Body>
+                            <Dialog.Footer>
+                                <Dialog.ActionTrigger asChild>
+                                    <Button px={2} onClick={handleCloseEditDialog}>
+                                        Cancel
+                                    </Button>
+                                </Dialog.ActionTrigger>
+                                <Dialog.ActionTrigger asChild>
+                                    <Button px={2} onClick={handleSubmitEditForm(handleEditConfirm)}>
+                                        Save
+                                    </Button>
+                                </Dialog.ActionTrigger>
+                            </Dialog.Footer>
+                        </Dialog.Content>
+                    </Dialog.Positioner>
+                </Portal>
+            </Dialog.Root>
 
             {/* Delete Dialog */}
             <Dialog.Root
