@@ -5,7 +5,6 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { DeleteButton } from "./ui/delete-button";
 import { ItemCard } from "./ui/item-card";
 import { PerformanceUpdate } from "@/lib/types";
 
@@ -29,7 +28,7 @@ interface PerformanceProps {
     isFrozen?: boolean;
 }
 
-interface EditPerformanceFormValues extends PerformanceUpdate {}
+type EditPerformanceFormValues = PerformanceUpdate;
 
 const handleDeletePerformance = async (id: string, concertId: string, passcode: string) => {
     try {
@@ -76,7 +75,6 @@ export default function Performance({
     passcode,
     isFrozen = false,
 }: PerformanceProps) {
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [enteredPassword, setEnteredPassword] = useState("");
     const [passwordError, setPasswordError] = useState("");
@@ -114,11 +112,6 @@ export default function Performance({
         cursor: isFrozen ? 'default' : 'grab',
     };
 
-    const handleOpenDeleteDialog = () => {
-        console.log('handleOpenDeleteDialog');
-        setIsDeleteDialogOpen(true);
-    };
-
     const handleOpenEditDialog = () => {
         console.log('handleOpenEditDialog');
         setIsEditDialogOpen(true);
@@ -128,15 +121,8 @@ export default function Performance({
             performers,
         });
         setEditError("");
-    };
-
-    const handleDeleteConfirm = () => {
-        if (enteredPassword === passcode) {
-            handleDeletePerformance(id, concertId, enteredPassword);
-            setIsDeleteDialogOpen(false);
-        } else {
-            setPasswordError("Incorrect password");
-        }
+        setEnteredPassword("");
+        setPasswordError("");
     };
 
     const handleEditConfirm = (data: EditPerformanceFormValues) => {
@@ -144,15 +130,20 @@ export default function Performance({
         setIsEditDialogOpen(false);
     };
 
-    const handleCloseDialog = () => {
-        setIsDeleteDialogOpen(false);
-        setEnteredPassword("");
-        setPasswordError("");
+    const handleDeleteConfirm = () => {
+        if (enteredPassword === passcode) {
+            handleDeletePerformance(id, concertId, enteredPassword);
+            setIsEditDialogOpen(false);
+        } else {
+            setPasswordError("Incorrect password");
+        }
     };
 
     const handleCloseEditDialog = () => {
         setIsEditDialogOpen(false);
         setEditError("");
+        setEnteredPassword("");
+        setPasswordError("");
     };
 
     return (
@@ -228,36 +219,29 @@ export default function Performance({
                         {performers}
                     </Text>
 
-                    {/* Action buttons - only enabled if not frozen */}
+                    {/* Edit button - only enabled if not frozen */}
                     {!isFrozen && (
-                        <Box display="flex" gap={1}>
-                            <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={handleOpenEditDialog}
-                                px={2}
-                                py={1}
-                                fontSize="sm"
-                                borderColor="var(--border)"
-                                color="var(--text-primary)"
-                                _hover={{
-                                    backgroundColor: "var(--hover-bg)",
-                                    borderColor: "var(--text-secondary)"
-                                }}
-                            >
-                                Edit
-                            </Button>
-                            <DeleteButton
-                                onDelete={handleOpenDeleteDialog}
-                            >
-                                Delete
-                            </DeleteButton>
-                        </Box>
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={handleOpenEditDialog}
+                            px={2}
+                            py={1}
+                            fontSize="sm"
+                            borderColor="var(--border)"
+                            color="var(--text-primary)"
+                            _hover={{
+                                backgroundColor: "var(--hover-bg)",
+                                borderColor: "var(--text-secondary)"
+                            }}
+                        >
+                            Edit
+                        </Button>
                     )}
                 </Box>
             </ItemCard>
 
-            {/* Edit Dialog */}
+            {/* Edit/Delete Dialog */}
             <Dialog.Root
                 open={isEditDialogOpen}
                 onOpenChange={(details) => !details.open && handleCloseEditDialog()}
@@ -271,9 +255,12 @@ export default function Performance({
                             backgroundImage="url('/paper.jpg')"
                             borderColor="var(--border)"
                             boxShadow="md"
+                            maxWidth="500px"
                         >
                             <Dialog.Header>
-                                <Dialog.Title color="var(--text-primary)" className={greatVibes.className}>Edit Performance</Dialog.Title>
+                                <Dialog.Title color="var(--text-primary)" className={greatVibes.className}>
+                                    Edit Performance
+                                </Dialog.Title>
                             </Dialog.Header>
                             <Dialog.Body pb="4" className={playfair.className}>
                                 <form onSubmit={handleSubmitEditForm(handleEditConfirm)}>
@@ -311,11 +298,52 @@ export default function Performance({
                                                 <Text color="red.500" fontSize="sm">{errorsEditForm.performers.message}</Text>
                                             )}
                                         </Field.Root>
-                                        {editError && (
-                                            <Text color="red.500" fontSize="sm">{editError}</Text>
-                                        )}
                                     </Box>
                                 </form>
+
+                                {/* Danger Zone - Delete Section */}
+                                <Box mt={6} pt={4} borderTop="1px solid var(--border)">
+                                    <Text mb={3} color="var(--text-secondary)" fontSize="sm" fontWeight="600">
+                                        Danger Zone
+                                    </Text>
+                                    
+                                    <Box mb={3}>
+                                        <Field.Root>
+                                            <Field.Label>Enter concert password to delete this performance</Field.Label>
+                                            <Input
+                                                value={enteredPassword}
+                                                onChange={(e) => setEnteredPassword(e.target.value)}
+                                                placeholder="Concert password"
+                                                paddingLeft={1}
+                                                color="var(--text-primary)"
+                                                size="sm"
+                                            />
+                                            {passwordError && (
+                                                <Text color="red.500" fontSize="sm">{passwordError}</Text>
+                                            )}
+                                        </Field.Root>
+                                    </Box>
+                                    
+                                    <Button
+                                        onClick={handleDeleteConfirm}
+                                        colorScheme="red"
+                                        variant="outline"
+                                        size="sm"
+                                        px={3}
+                                        _hover={{
+                                            backgroundColor: "red.50",
+                                            borderColor: "red.400"
+                                        }}
+                                    >
+                                        Delete Performance
+                                    </Button>
+                                </Box>
+
+                                {editError && (
+                                    <Text color="red.500" fontSize="sm" mt={3}>
+                                        {editError}
+                                    </Text>
+                                )}
                             </Dialog.Body>
                             <Dialog.Footer>
                                 <Dialog.ActionTrigger asChild>
@@ -325,56 +353,7 @@ export default function Performance({
                                 </Dialog.ActionTrigger>
                                 <Dialog.ActionTrigger asChild>
                                     <Button px={2} onClick={handleSubmitEditForm(handleEditConfirm)}>
-                                        Save
-                                    </Button>
-                                </Dialog.ActionTrigger>
-                            </Dialog.Footer>
-                        </Dialog.Content>
-                    </Dialog.Positioner>
-                </Portal>
-            </Dialog.Root>
-
-            {/* Delete Dialog */}
-            <Dialog.Root
-                open={isDeleteDialogOpen}
-                onOpenChange={(details) => !details.open && handleCloseDialog()}
-            >
-                <Portal>
-                    <Dialog.Backdrop />
-                    <Dialog.Positioner>
-                        <Dialog.Content
-                            p={4}
-                            backgroundColor="transparent"
-                            backgroundImage="url('/paper.jpg')"
-                            borderColor="var(--border)"
-                            boxShadow="md"
-                        >
-                            <Dialog.Header>
-                                <Dialog.Title color="var(--text-primary)" className={greatVibes.className}>Delete Performance</Dialog.Title>
-                            </Dialog.Header>
-                            <Dialog.Body pb="4" className={playfair.className}>
-                                <Text mb={4}>Are you sure you want to delete this performance?</Text>
-                                <Field.Root>
-                                    <Field.Label>Enter concert password to confirm</Field.Label>
-                                    <Input
-                                        value={enteredPassword}
-                                        onChange={(e) => setEnteredPassword(e.target.value)}
-                                        placeholder="Concert password"
-                                        paddingLeft={1}
-                                        color="var(--text-primary)"
-                                    />
-                                    {passwordError && <Text color="red.500" fontSize="sm">{passwordError}</Text>}
-                                </Field.Root>
-                            </Dialog.Body>
-                            <Dialog.Footer>
-                                <Dialog.ActionTrigger asChild>
-                                    <Button px={2} onClick={handleCloseDialog}>
-                                        Cancel
-                                    </Button>
-                                </Dialog.ActionTrigger>
-                                <Dialog.ActionTrigger asChild>
-                                    <Button px={2} onClick={handleDeleteConfirm}>
-                                        Delete
+                                        Save Changes
                                     </Button>
                                 </Dialog.ActionTrigger>
                             </Dialog.Footer>
