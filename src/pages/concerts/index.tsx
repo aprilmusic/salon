@@ -145,7 +145,7 @@ export default function ConcertListPage() {
             description: concert.performances.map(perf => perf.title).join(", "),
             additionalInfo: isAdmin ? `Passcode: ${concert.passcode}` : undefined,
             onClick: () => {
-                const url = index === 0 ? '/' : `/concerts/${concert.id}`;
+                const url = `/concerts/${concert.id}`;
                 window.location.href = url;
             },
             onDelete: isAdmin ? () => {
