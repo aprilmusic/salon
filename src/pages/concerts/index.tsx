@@ -136,7 +136,7 @@ export default function ConcertListPage() {
         );
     }
 
-    // Transform concerts into program items
+    // Transform concerts into program items  
     const programItems = concerts && concerts.success
         ? concerts.result.map((concert, index) => ({
             id: concert.id,
