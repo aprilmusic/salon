@@ -2,7 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import { NextApiResponse } from 'next'
 import { NextApiRequest } from 'next'
 import { z } from 'zod'
-import { performanceSchema, makeResponseSchema } from '@/lib/types'
+import { performanceSchema, performanceUpdateSchema, makeResponseSchema } from '@/lib/types'
 
 const prisma = new PrismaClient()
 
@@ -58,7 +58,10 @@ async function handleGetPerformanceById(
     }
 }
 
-const handleUpdatePerformanceByIdParamsSchema = performanceSchema
+const handleUpdatePerformanceByIdParamsSchema = z.object({
+    id: z.string(),
+    ...performanceUpdateSchema.shape
+})
 type HandleUpdatePerformanceByIdParams = z.infer<typeof handleUpdatePerformanceByIdParamsSchema>
 
 export const handleUpdatePerformanceByIdResponseSchema = makeResponseSchema(performanceSchema)

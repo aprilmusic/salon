@@ -8,7 +8,14 @@ export const performanceSchema = z.object({
     order: z.string()
 })
 
+export const performanceUpdateSchema = z.object({
+    title: z.string(),
+    composer: z.string(),
+    performers: z.string(),
+})
+
 export type Performance = z.infer<typeof performanceSchema>
+export type PerformanceUpdate = z.infer<typeof performanceUpdateSchema>
 
 export const concertSchema = z.object({
     id: z.string(),

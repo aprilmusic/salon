@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { DeleteButton } from "./ui/delete-button";
 import { ItemCard } from "./ui/item-card";
+import { PerformanceUpdate } from "@/lib/types";
 
 const greatVibes = Great_Vibes({
     subsets: ["latin"],
@@ -28,11 +29,7 @@ interface PerformanceProps {
     isFrozen?: boolean;
 }
 
-interface EditPerformanceFormValues {
-    title: string;
-    composer: string;
-    performers: string;
-}
+interface EditPerformanceFormValues extends PerformanceUpdate {}
 
 const handleDeletePerformance = async (id: string, concertId: string, passcode: string) => {
     try {
@@ -233,7 +230,7 @@ export default function Performance({
 
                     {/* Action buttons - only enabled if not frozen */}
                     {!isFrozen && (
-                        <Box display="flex" gap={2}>
+                        <Box display="flex" gap={1}>
                             <Button
                                 size="sm"
                                 variant="outline"
