@@ -415,6 +415,7 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                                     title={item.title}
                                     composer={item.composer}
                                     performers={item.performers}
+                                    order={item.order}
                                     concertId={concert.id}
                                     passcode={concert.passcode}
                                     isFrozen={isFrozen}
@@ -432,6 +433,7 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                                             title={item.title}
                                             composer={item.composer}
                                             performers={item.performers}
+                                            order={item.order}
                                             concertId={concert.id}
                                             passcode={concert.passcode}
                                             isFrozen={isFrozen}

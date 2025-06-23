@@ -25,6 +25,7 @@ interface PerformanceProps {
     id: string;
     concertId: string;
     passcode: string;
+    order: string;
     isFrozen?: boolean;
 }
 
@@ -48,14 +49,14 @@ const handleDeletePerformance = async (id: string, concertId: string, passcode: 
     }
 };
 
-const handleUpdatePerformance = async (id: string, data: EditPerformanceFormValues) => {
+const handleUpdatePerformance = async (id: string, data: EditPerformanceFormValues, order: string) => {
     try {
         const response = await fetch(`/api/performances/${id}`, {
             method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(data)
+            body: JSON.stringify({ ...data, order })
         });
         if (!response.ok) {
             throw new Error('Failed to update performance');
@@ -73,6 +74,7 @@ export default function Performance({
     id,
     concertId,
     passcode,
+    order,
     isFrozen = false,
 }: PerformanceProps) {
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
@@ -126,7 +128,7 @@ export default function Performance({
     };
 
     const handleEditConfirm = (data: EditPerformanceFormValues) => {
-        handleUpdatePerformance(id, data);
+        handleUpdatePerformance(id, data, order);
         setIsEditDialogOpen(false);
     };
 
