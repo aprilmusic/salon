@@ -15,6 +15,7 @@ model Concert {
   date        DateTime
   passcode    String
   frozen      Boolean      @default(false)
+  featured    Boolean      @default(false)
   videoLink   String?
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt

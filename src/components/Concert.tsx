@@ -23,6 +23,7 @@ interface EditConcertFormValues {
     date: string;
     passcode: string;
     frozen: boolean;
+    featured: boolean;
     videoLink?: string;
 }
 
@@ -321,6 +322,7 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                 date: new Date(data.date).toISOString(),
                 passcode: data.passcode,
                 frozen: data.frozen,
+                featured: data.featured,
                 videoLink: data.videoLink,
             };
 
@@ -604,6 +606,28 @@ export default function Concert({ concert }: { concert: ConcertType }) {
                                             </select>
                                             <Text fontSize="sm" color="gray.500" mt={2}>
                                                 When a concert is frozen, performances cannot be added, deleted, or reordered by anyone
+                                            </Text>
+                                        </Field.Root>
+                                        <Field.Root>
+                                            <Field.Label>Featured</Field.Label>
+                                            <select
+                                                {...registerEditForm("featured", {
+                                                    setValueAs: (value) => value === "true",
+                                                })}
+                                                defaultValue={concert.featured ? "true" : "false"}
+                                                style={{
+                                                    padding: "8px",
+                                                    borderRadius: "4px",
+                                                    border: "1px solid var(--border)",
+                                                    backgroundColor: "var(--content-background)",
+                                                    color: "var(--text-primary)"
+                                                }}
+                                            >
+                                                <option value="false">Not Featured</option>
+                                                <option value="true">Featured</option>
+                                            </select>
+                                            <Text fontSize="sm" color="gray.500" mt={2}>
+                                                Featured concerts are highlighted on the homepage
                                             </Text>
                                         </Field.Root>
                                         {error && (

@@ -55,7 +55,8 @@ export async function handleGetConcerts(_: GetConcertsParams): Promise<GetConcer
         return {
             success: true, result: concerts.map(concert => ({
                 ...concert,
-                date: concert.date.toISOString()
+                date: concert.date.toISOString(),
+                featured: concert.featured
             }))
         }
     } catch (error) {
@@ -102,7 +103,8 @@ export async function handleCreateConcert({ performances, ...concertData }: Crea
         return {
             success: true, result: {
                 ...concert,
-                date: concert.date.toISOString()
+                date: concert.date.toISOString(),
+                featured: concert.featured
             }
         }
     } catch (error) {

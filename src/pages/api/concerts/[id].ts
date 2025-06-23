@@ -75,6 +75,7 @@ async function handleGetConcertById(
             date: concert.date.toISOString(),
             passcode: concert.passcode,
             frozen: concert.frozen,
+            featured: concert.featured,
             videoLink: concert.videoLink,
             performances: concert.performances.map(p => ({
                 id: p.id,
@@ -103,6 +104,7 @@ const handleUpdateConcertByIdParamsSchema = z.object({
     date: z.string().optional(),
     passcode: z.string().optional(),
     frozen: z.boolean().optional(),
+    featured: z.boolean().optional(),
     videoLink: z.string().nullable().optional()
 })
 type HandleUpdateConcertByIdParams = z.infer<typeof handleUpdateConcertByIdParamsSchema>
@@ -143,6 +145,7 @@ async function handleUpdateConcertById(
             date: result.date.toISOString(),
             passcode: result.passcode,
             frozen: result.frozen,
+            featured: result.featured,
             videoLink: result.videoLink,
             performances: result.performances.map(p => ({
                 id: p.id,

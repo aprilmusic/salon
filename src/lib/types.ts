@@ -24,6 +24,7 @@ export const concertSchema = z.object({
     date: z.string(),
     passcode: z.string(),
     frozen: z.boolean().default(false),
+    featured: z.boolean().default(false),
     videoLink: z.string().nullable().optional(),
     performances: z.array(performanceSchema)
 })

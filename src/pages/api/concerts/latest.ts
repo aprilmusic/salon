@@ -25,9 +25,10 @@ export type GetLatestConcertResponse = z.infer<typeof getLatestConcertResponseSc
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 export async function handleGetLatestConcert(_: GetLatestConcertParams): Promise<GetLatestConcertResponse> {
-    console.log('GET /api/concerts')
+    console.log('GET /api/concerts/latest')
     try {
-        const latestConcert = await prisma.concert.findFirst({
+        // Get all concerts and handle featured logic in JavaScript
+        const allConcerts = await prisma.concert.findMany({
             orderBy: {
                 date: 'desc'
             },
@@ -40,14 +41,30 @@ export async function handleGetLatestConcert(_: GetLatestConcertParams): Promise
             }
         })
 
-        if (!latestConcert) {
+        if (allConcerts.length === 0) {
             return { success: false, error: { message: 'No concerts found' } }
         }
 
+        // Try to find a featured concert, otherwise use the latest
+        const featuredConcert = allConcerts.find(concert => concert.featured === true)
+        const latestConcert = featuredConcert || allConcerts[0]
+
         return {
             success: true, result: {
-                ...latestConcert,
-                date: latestConcert.date.toISOString()
+                id: latestConcert.id,
+                name: latestConcert.name,
+                date: latestConcert.date.toISOString(),
+                passcode: latestConcert.passcode,
+                frozen: latestConcert.frozen,
+                featured: latestConcert.featured,
+                videoLink: latestConcert.videoLink,
+                performances: latestConcert.performances.map(p => ({
+                    id: p.id,
+                    title: p.title,
+                    composer: p.composer,
+                    performers: p.performers,
+                    order: p.order
+                }))
             }
         }
     } catch (error) {
