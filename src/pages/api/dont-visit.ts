@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { serialize } from 'cookie';
 
 const ADMIN_COOKIE_NAME = 'admin_token';
-const ADMIN_COOKIE_VALUE = process.env.ADMIN_SECRET || 'your-secure-secret-here';
+import { ADMIN_COOKIE_VALUE } from '@/lib/adminSecret';
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const existingCookie = req.cookies[ADMIN_COOKIE_NAME];
