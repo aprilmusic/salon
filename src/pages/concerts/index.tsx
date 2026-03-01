@@ -138,7 +138,7 @@ export default function ConcertListPage() {
 
     // Transform concerts into program items  
     const programItems = concerts && concerts.success
-        ? concerts.result.map((concert, index) => ({
+        ? concerts.result.map((concert) => ({
             id: concert.id,
             title: concert.name || "Salon",
             rightText: new Date(concert.date).toLocaleDateString(),
